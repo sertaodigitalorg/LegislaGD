@@ -9,7 +9,7 @@ jobs:
   secrets:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Basic secret pattern check
         run: |
           ! grep -RInE '(BEGIN RSA|PRIVATE KEY|ghp_[A-Za-z0-9_]+|github_pat_[A-Za-z0-9_]+|api[_-]?key|password|senha)' . --exclude-dir=.git --exclude='security.yml'
