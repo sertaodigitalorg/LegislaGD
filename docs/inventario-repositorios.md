@@ -34,11 +34,12 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 ## e-Cidade-SD
 
 - Repositorio oficial: https://github.com/sertaodigitalorg/e-Cidade-SD.git
-- Origem autorizada pelo usuario: https://github.com/DBSeller/e-cidade.git
+- Fonte canonica: https://github.com/DBSeller/e-cidade.git
 - Branch publica atual no repositorio oficial: `main`
 - Branch local baixada: `master`
-- Situacao: branch `main` reinicializada a partir de `DBSeller/e-cidade` com `--force-with-lease`
+- Situacao: branch `main` reinicializada a partir da fonte canonica `DBSeller/e-cidade` com `--force-with-lease`
 - Commit publicado: `000194437f016c436b26c656dd1eee7ab6778f8c`
+- Verificacao: `sertaodigitalorg/e-Cidade-SD/main` e `DBSeller/e-cidade/master` apontam para o mesmo commit
 - Observacao Windows: a checkout local apresenta modificacoes aparentes causadas por sensibilidade a maiusculas/minusculas; usar WSL/Linux ou diretorio case-sensitive para publicacao limpa.
 
 ## SIGI-SD

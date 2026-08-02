@@ -21,17 +21,16 @@ Esta estrategia preserva os projetos originais, seus creditos, licencas e histor
 
 ## e-Cidade-SD
 
-O usuario autorizou que o Git do e-Cidade-SD seja zerado/reiniciado e que a distribuicao comece a partir de `DBSeller/e-cidade`.
+`DBSeller/e-cidade` e a fonte canonica do e-Cidade-SD. O repositorio `sertaodigitalorg/e-Cidade-SD` deve ser tratado como fork/distribuicao derivada dele.
 
-Essa autorizacao nao implica executar automaticamente `git push --force`. A acao remota deve ser feita com cuidado, idealmente por um procedimento autenticado e revisado, porque substitui historico no repositorio oficial.
+O estado anterior de `sertaodigitalorg/e-Cidade-SD` estava desatualizado e nao possuia alteracoes proprias a preservar nesta etapa.
 
-Procedimento recomendado:
+Procedimento aplicado nesta etapa:
 
-1. Confirmar backup ou ausencia de historico relevante em `sertaodigitalorg/e-Cidade-SD`.
-2. Clonar `DBSeller/e-cidade` em um ambiente limpo.
-3. Configurar `origin` como `sertaodigitalorg/e-Cidade-SD`.
-4. Configurar `upstream` como `DBSeller/e-cidade`.
-5. Publicar a branch principal da distribuicao somente apos revisao.
+1. Clonar `DBSeller/e-cidade`.
+2. Configurar `origin` como `sertaodigitalorg/e-Cidade-SD`.
+3. Configurar `upstream` como `DBSeller/e-cidade`.
+4. Reinicializar `sertaodigitalorg/e-Cidade-SD/main` a partir de `DBSeller/e-cidade/master`.
 
 ## SAPL-SD e PortalModelo-SD
 

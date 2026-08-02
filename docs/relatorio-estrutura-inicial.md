@@ -13,7 +13,7 @@ Data: 2026-08-02
 
 ## Decisoes registradas
 
-- e-Cidade-SD pode ser reiniciado a partir de `https://github.com/DBSeller/e-cidade.git`, conforme autorizacao do usuario.
+- e-Cidade-SD usa `https://github.com/DBSeller/e-cidade.git` como fonte canonica. O repositorio do Sertao Digital e fork/distribuicao derivada.
 - SAPL-SD deve iniciar a partir de `https://github.com/interlegis/sapl.git`.
 - PortalModelo-SD deve iniciar a partir de `https://github.com/interlegis/portalmodelo.git`.
 - Qualquer outro fork deve ser perguntado ao usuario antes de ser criado ou configurado.
@@ -25,7 +25,7 @@ Data: 2026-08-02
 - `sertaodigitalorg/LegislaGD`: publicado `main` com a estrutura inicial do agregador.
 - `sertaodigitalorg/SAPL-SD`: publicado `main` a partir de `interlegis/sapl`, branch local `3.1.x`.
 - `sertaodigitalorg/PortalModelo-SD`: publicado `main` a partir de `interlegis/portalmodelo`, branch local `master`.
-- `sertaodigitalorg/e-Cidade-SD`: branch `main` reinicializada com `--force-with-lease` a partir de `DBSeller/e-cidade`, commit `000194437f016c436b26c656dd1eee7ab6778f8c`.
+- `sertaodigitalorg/e-Cidade-SD`: branch `main` reinicializada com `--force-with-lease` a partir da fonte canonica `DBSeller/e-cidade`, commit `000194437f016c436b26c656dd1eee7ab6778f8c`.
 - `sertaodigitalorg/SIGI-SD`: preservado sem push, por ser repositorio proprio mantido pelas equipes do Sertao Digital.
 
 ## Limitacoes encontradas
@@ -36,6 +36,7 @@ Data: 2026-08-02
 - Os diretorios irmaos foram baixados em `C:\SAPL-SD`, `C:\PortalModelo-SD`, `C:\e-Cidade-SD` e `C:\SIGI-SD`.
 - O clone local do e-Cidade-SD no Windows apresenta 8 modificacoes aparentes por conflito de nomes sensiveis a maiusculas/minusculas e normalizacao de checkout. O Windows negou habilitar case-sensitive em `C:\e-Cidade-SD`.
 - Ao publicar e-Cidade-SD, o GitHub alertou que `docker/database/ecidade_base.sql.gz` tem 68,90 MB, acima da recomendacao de 50 MB. O arquivo foi aceito, mas deve ser avaliado para Git LFS ou outra estrategia futura.
+- Confirmacao posterior: `DBSeller/e-cidade/master` e `sertaodigitalorg/e-Cidade-SD/main` apontam para `000194437f016c436b26c656dd1eee7ab6778f8c`.
 
 ## Repositorios baixados
 
