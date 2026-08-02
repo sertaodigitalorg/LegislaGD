@@ -9,7 +9,7 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 - Repositorio oficial: https://github.com/sertaodigitalorg/LegislaGD.git
 - Diretorio local: `C:\LegislaGD`
 - Branch local: `main`
-- Status local antes da estruturacao: repositorio sem commits locais
+- Status: publicado em `sertaodigitalorg/LegislaGD`, branch `main`
 - Papel: agregador do ecossistema, documentacao, governanca, infraestrutura e integracoes
 - Upstream externo: nao aplicavel
 
@@ -19,7 +19,7 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 - Origem autorizada pelo usuario: https://github.com/interlegis/sapl.git
 - Consulta ao repositorio oficial: sem branches publicas visiveis na consulta `git ls-remote`
 - Branch local baixada: `3.1.x`
-- Situacao: fork/distribuicao preparado localmente a partir de `interlegis/sapl`
+- Situacao: publicado em `sertaodigitalorg/SAPL-SD`, branch remota `main`
 - Observacao: nao criar fork adicional sem confirmacao previa do usuario
 
 ## PortalModelo-SD
@@ -28,7 +28,7 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 - Origem autorizada pelo usuario: https://github.com/interlegis/portalmodelo.git
 - Consulta ao repositorio oficial: sem branches publicas visiveis na consulta `git ls-remote`
 - Branch local baixada: `master`
-- Situacao: fork/distribuicao preparado localmente a partir de `interlegis/portalmodelo`
+- Situacao: publicado em `sertaodigitalorg/PortalModelo-SD`, branch remota `main`
 - Observacao: nao criar fork adicional sem confirmacao previa do usuario
 
 ## e-Cidade-SD
@@ -37,8 +37,8 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 - Origem autorizada pelo usuario: https://github.com/DBSeller/e-cidade.git
 - Branch publica atual no repositorio oficial: `main`
 - Branch local baixada: `master`
-- Situacao: o usuario autorizou zerar/reiniciar o Git do e-Cidade-SD e iniciar a partir da origem `DBSeller/e-cidade`; a base foi preparada localmente
-- Limite: nao foi executado reset, force push ou substituicao de historico remoto nesta etapa
+- Situacao: branch `main` reinicializada a partir de `DBSeller/e-cidade` com `--force-with-lease`
+- Commit publicado: `000194437f016c436b26c656dd1eee7ab6778f8c`
 - Observacao Windows: a checkout local apresenta modificacoes aparentes causadas por sensibilidade a maiusculas/minusculas; usar WSL/Linux ou diretorio case-sensitive para publicacao limpa.
 
 ## SIGI-SD
@@ -46,7 +46,7 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 - Repositorio oficial: https://github.com/sertaodigitalorg/SIGI-SD.git
 - Branch publica atual: `main`
 - Origem upstream: nao aplicavel nesta etapa
-- Situacao: sistema mantido pelas equipes do Sertao Digital
+- Situacao: sistema mantido pelas equipes do Sertao Digital; nao alterado nesta etapa
 
 ## Pendencias de inspecao profunda
 
