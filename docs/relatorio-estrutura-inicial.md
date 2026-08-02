@@ -4,12 +4,12 @@ Data: 2026-08-02
 
 ## Arquivos criados
 
-- `README.md`
-- `docs/inventario-repositorios.md`
-- `docs/governanca/estrategia-de-forks.md`
-- `scripts/clone-components.sh`
-- `scripts/check-repositories.sh`
-- `docs/relatorio-estrutura-inicial.md`
+- Estrutura raiz: `README.md`, `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`, `CHANGELOG.md`, `ROADMAP.md`, `.editorconfig`, `.gitattributes`, `.gitignore`, `.env.example` e `Makefile`.
+- Documentacao: `docs/`, incluindo arquitetura, governanca, implantacao, e-Cidade, SAPL, PortalModelo, SIGI-SD, seguranca, ADRs, inventario, relatorio e roadmap.
+- Infraestrutura: `infrastructure/`, incluindo Compose inicial, ambientes, proxy, monitoramento, logging, backup e redes.
+- Integracoes: `integrations/`, incluindo contratos conceituais e JSON Schemas iniciais.
+- Scripts: `scripts/`, incluindo bootstrap, clonagem, checagem, validacao de ambiente, start/stop, backup, restore e preparacao de forks.
+- GitHub: `.github/`, incluindo templates de issue, template de PR, CODEOWNERS, Dependabot e workflows seguros.
 
 ## Decisoes registradas
 
@@ -52,10 +52,8 @@ Data: 2026-08-02
 3. Configurar protecoes de branch e revisoes obrigatorias nos repositorios publicados.
 4. Definir licenca final do agregador apos compatibilidade entre componentes.
 
-## Comandos sugeridos para commit
+## Commits publicados
 
-```bash
-git status --short
-git add README.md docs scripts
-git commit -m "docs: registra estrategia inicial de forks"
-```
+- `edabadf docs: estrutura ecossistema LegislaGD`
+- `06ce004 docs: atualiza relatorio de publicacao inicial`
+- `5dcc880 docs: define DBSeller como fonte canonica do e-Cidade`

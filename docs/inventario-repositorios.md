@@ -2,7 +2,7 @@
 
 Data da inspecao: 2026-08-02
 
-Este inventario registra apenas informacoes confirmadas por consulta Git publica e pela inspecao local do workspace. Nenhum push, reset ou alteracao de historico remoto foi executado.
+Este inventario registra informacoes confirmadas por consulta Git publica, inspecao local do workspace e publicacoes realizadas em 2026-08-02.
 
 ## LegislaGD
 
@@ -16,8 +16,8 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 ## SAPL-SD
 
 - Repositorio oficial: https://github.com/sertaodigitalorg/SAPL-SD.git
-- Origem autorizada pelo usuario: https://github.com/interlegis/sapl.git
-- Consulta ao repositorio oficial: sem branches publicas visiveis na consulta `git ls-remote`
+- Fonte upstream: https://github.com/interlegis/sapl.git
+- Situacao anterior do repositorio oficial: sem branches publicas visiveis antes da publicacao inicial
 - Branch local baixada: `3.1.x`
 - Situacao: publicado em `sertaodigitalorg/SAPL-SD`, branch remota `main`
 - Observacao: nao criar fork adicional sem confirmacao previa do usuario
@@ -25,8 +25,8 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 ## PortalModelo-SD
 
 - Repositorio oficial: https://github.com/sertaodigitalorg/PortalModelo-SD.git
-- Origem autorizada pelo usuario: https://github.com/interlegis/portalmodelo.git
-- Consulta ao repositorio oficial: sem branches publicas visiveis na consulta `git ls-remote`
+- Fonte upstream: https://github.com/interlegis/portalmodelo.git
+- Situacao anterior do repositorio oficial: sem branches publicas visiveis antes da publicacao inicial
 - Branch local baixada: `master`
 - Situacao: publicado em `sertaodigitalorg/PortalModelo-SD`, branch remota `main`
 - Observacao: nao criar fork adicional sem confirmacao previa do usuario
@@ -52,5 +52,5 @@ Este inventario registra apenas informacoes confirmadas por consulta Git publica
 ## Pendencias de inspecao profunda
 
 - Inspecionar licencas, frameworks, bancos, Docker, pipelines, testes e dependencias nos diretorios baixados.
-- Confirmar se `SAPL-SD` e `PortalModelo-SD` estao vazios ou privados com refs nao publicas.
-- Definir procedimento autenticado para criar ou reinicializar forks na organizacao `sertaodigitalorg`, se necessario.
+- Avaliar Git LFS ou estrategia alternativa para o arquivo grande identificado no e-Cidade-SD.
+- Definir licenca final do agregador apos a analise de compatibilidade entre componentes.
