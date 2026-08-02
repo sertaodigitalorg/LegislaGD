@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Publicacao SAPL-SD para PortalModelo-SD",
+  "type": "object",
+  "required": ["id", "tipo", "titulo", "url_origem"],
+  "properties": {
+    "id": { "type": "string" },
+    "tipo": { "enum": ["materia", "sessao"] },
+    "titulo": { "type": "string" },
+    "url_origem": { "type": "string", "format": "uri" },
+    "publicado_em": { "type": "string", "format": "date-time" }
+  }
+}

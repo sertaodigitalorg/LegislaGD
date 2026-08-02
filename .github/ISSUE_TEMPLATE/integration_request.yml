@@ -1,0 +1,11 @@
+name: Integracao
+description: Solicitar contrato ou fluxo de integracao
+title: "[integration]: "
+labels: ["integration"]
+body:
+  - type: textarea
+    id: fluxo
+    attributes:
+      label: Fluxo
+    validations:
+      required: true

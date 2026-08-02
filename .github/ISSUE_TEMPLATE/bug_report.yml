@@ -1,0 +1,11 @@
+name: Bug
+description: Relatar problema
+title: "[bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: descricao
+    attributes:
+      label: Descricao
+    validations:
+      required: true

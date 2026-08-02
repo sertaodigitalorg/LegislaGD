@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Parlamentar SAPL-SD para e-Cidade-SD",
+  "type": "object",
+  "required": ["id", "nome", "mandato"],
+  "properties": {
+    "id": { "type": "string" },
+    "nome": { "type": "string" },
+    "cpf_hash": { "type": "string" },
+    "mandato": { "type": "string" },
+    "ativo": { "type": "boolean" }
+  }
+}

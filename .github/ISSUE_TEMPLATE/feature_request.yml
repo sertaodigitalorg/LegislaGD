@@ -1,0 +1,11 @@
+name: Funcionalidade
+description: Solicitar melhoria
+title: "[feat]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: necessidade
+    attributes:
+      label: Necessidade
+    validations:
+      required: true

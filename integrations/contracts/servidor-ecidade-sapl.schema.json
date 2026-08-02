@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Servidor e-Cidade-SD para SAPL-SD",
+  "type": "object",
+  "required": ["id", "nome", "unidade"],
+  "properties": {
+    "id": { "type": "string" },
+    "nome": { "type": "string" },
+    "unidade": { "type": "string" },
+    "cargo": { "type": "string" },
+    "ativo": { "type": "boolean" }
+  }
+}

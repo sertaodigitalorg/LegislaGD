@@ -1,0 +1,11 @@
+name: Documentacao
+description: Solicitar ajuste de documentacao
+title: "[docs]: "
+labels: ["documentation"]
+body:
+  - type: textarea
+    id: ajuste
+    attributes:
+      label: Ajuste
+    validations:
+      required: true

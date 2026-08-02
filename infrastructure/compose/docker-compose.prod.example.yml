@@ -1,0 +1,3 @@
+services:
+  integration-placeholder:
+    profiles: ["monitoramento"]

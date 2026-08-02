@@ -1,0 +1,8 @@
+name: legislagd
+
+services:
+  integration-placeholder:
+    image: hello-world
+    profiles: ["monitoramento"]
+    labels:
+      br.org.sertaodigital.legislagd.description: "Placeholder documentado; nao representa ambiente de producao."

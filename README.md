@@ -1,0 +1,90 @@
+# LegislaGD
+
+Plataforma publica e livre de Governo Digital para gestao legislativa, administrativa, financeira, transparencia, atendimento ao cidadao e soberania tecnologica das Camaras Municipais.
+
+**Slogan:** Governo Digital para o Poder Legislativo.
+
+## Repositorios oficiais
+
+| Componente | Repositorio Sertao Digital | Origem upstream confirmada |
+| --- | --- | --- |
+| LegislaGD | https://github.com/sertaodigitalorg/LegislaGD.git | Repositorio agregador |
+| SAPL-SD | https://github.com/sertaodigitalorg/SAPL-SD.git | https://github.com/interlegis/sapl.git |
+| PortalModelo-SD | https://github.com/sertaodigitalorg/PortalModelo-SD.git | https://github.com/interlegis/portalmodelo.git |
+| e-Cidade-SD | https://github.com/sertaodigitalorg/e-Cidade-SD.git | https://github.com/DBSeller/e-cidade.git |
+| SIGI-SD | https://github.com/sertaodigitalorg/SIGI-SD.git | A confirmar antes de configurar fork/upstream |
+
+O LegislaGD e o ponto central de documentacao, governanca, arquitetura, infraestrutura de desenvolvimento e coordenacao entre componentes. Os sistemas continuam independentes, com historico, licenca e evolucao proprios.
+
+## Missao
+
+Oferecer uma base publica, livre e auditavel para que Camaras Municipais implantem Governo Digital com controle sobre codigo, dados, operacao e continuidade institucional.
+
+## Principios
+
+- Nao SaaS: cada instituicao pode instalar, hospedar, manter, exportar, migrar e operar sua propria instancia.
+- Soberania tecnologica: codigo-fonte, banco de dados, documentos, configuracoes, backups e credenciais devem permanecer sob controle da instituicao.
+- Integracao por contratos: APIs, eventos, webhooks, filas e exportacoes controladas sao preferidos.
+- Sem acoplamento direto por banco: acesso irrestrito aos bancos internos dos sistemas nao deve ser usado como estrategia de integracao.
+- Forks responsaveis: preservar licencas, creditos, autores e contribuicoes upstream nos componentes baseados em projetos de terceiros.
+- Evolucao propria: SIGI-SD e mantido pelas equipes do Sertao Digital, sem dependencia de upstream externo nesta etapa.
+
+## Arquitetura logica
+
+```text
+Cidadao e servidores
+        |
+        v
+PortalModelo-SD
+        |
+        +-------------------+
+        |                   |
+        v                   v
+    SAPL-SD              SIGI-SD
+        |                   |
+        +---------+---------+
+                  |
+                  v
+        Camada de integracao
+                  |
+                  v
+             e-Cidade-SD
+                  |
+                  v
+ Dados, transparencia e auditoria
+```
+
+## Responsabilidades
+
+- **SAPL-SD:** fonte oficial dos dados legislativos.
+- **e-Cidade-SD:** fonte oficial dos dados administrativos, financeiros e funcionais.
+- **PortalModelo-SD:** fachada publica institucional.
+- **SIGI-SD:** fonte oficial dos protocolos e atendimentos, mantida pelas equipes do Sertao Digital.
+- **LegislaGD:** agregador, orquestrador e camada de governanca.
+
+## Roadmap
+
+O roadmap esta organizado em ondas: fundacao, legislativo, portal, administracao, atendimento, integracoes e Camara inteligente.
+
+## Contribuicao
+
+Contribuicoes devem preservar licencas, creditos e rastreabilidade das origens. Mudancas em SAPL-SD, PortalModelo-SD e e-Cidade-SD devem considerar contribuicoes de volta aos mantenedores originais quando forem genericas.
+
+## Seguranca
+
+Vulnerabilidades criticas nao devem ser abertas em issues publicas. Use o processo descrito em `SECURITY.md`.
+
+## Licenca e creditos
+
+A licenca do agregador deve ser definida apos a inspecao completa das licencas dos componentes. SAPL, Portal Modelo e e-Cidade preservam suas licencas, historicos e creditos originais.
+
+## Desenvolvimento
+
+Use os scripts em `scripts/` para clonar e inspecionar componentes sem sobrescrever repositorios existentes:
+
+```bash
+./scripts/clone-components.sh
+./scripts/check-repositories.sh
+```
+
+Esses scripts nao executam `reset`, nao alteram branches automaticamente e nao apagam diretorios.

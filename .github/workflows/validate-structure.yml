@@ -1,0 +1,18 @@
+name: Validate structure
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate expected directories
+        run: |
+          test -d docs
+          test -d infrastructure
+          test -d integrations
+          test -d scripts

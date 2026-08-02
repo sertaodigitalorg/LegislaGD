@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+node_modules/
+vendor/
+.idea/
+.vscode/
+*.log
+*.tmp
+*.bak
+coverage/
+dist/
+build/
+*.sqlite
+*.sqlite3
+*.dump
+*.sql

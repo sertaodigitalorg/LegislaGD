@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Atendimento SIGI-SD para sistemas destino",
+  "type": "object",
+  "required": ["id", "canal", "classificacao", "protocolo"],
+  "properties": {
+    "id": { "type": "string" },
+    "canal": { "type": "string" },
+    "classificacao": { "type": "string" },
+    "protocolo": { "type": "string" },
+    "destino": { "enum": ["SAPL-SD", "e-Cidade-SD"] }
+  }
+}
