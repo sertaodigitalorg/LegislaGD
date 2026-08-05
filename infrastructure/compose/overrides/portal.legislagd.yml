@@ -1,0 +1,16 @@
+services:
+  portalmodelo:
+    networks:
+      - default
+      - legislagd
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "legislagd"
+      traefik.http.routers.portalmodelo.rule: "Host(`portal.legislagd.localhost`) || Host(`portalmodelo.legislagd.localhost`) || Host(`portal.localhost`) || Host(`portalmodelo.localhost`)"
+      traefik.http.routers.portalmodelo.entrypoints: "web"
+      traefik.http.services.portalmodelo.loadbalancer.server.port: "8080"
+
+networks:
+  legislagd:
+    external: true
+    name: legislagd

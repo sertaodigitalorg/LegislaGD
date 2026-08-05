@@ -1,0 +1,16 @@
+services:
+  sapl-dev:
+    networks:
+      - sapl-net-dev
+      - legislagd
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "legislagd"
+      traefik.http.routers.sapl.rule: "Host(`sapl.legislagd.localhost`) || Host(`sapl.localhost`)"
+      traefik.http.routers.sapl.entrypoints: "web"
+      traefik.http.services.sapl.loadbalancer.server.port: "8000"
+
+networks:
+  legislagd:
+    external: true
+    name: legislagd

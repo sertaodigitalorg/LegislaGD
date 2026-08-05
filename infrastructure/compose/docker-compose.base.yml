@@ -1,8 +1,73 @@
 name: legislagd
 
 services:
-  integration-placeholder:
-    image: hello-world
-    profiles: ["monitoramento"]
+  proxy:
+    image: traefik:v3.1
+    command:
+      - --api.dashboard=true
+      - --api.insecure=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.web.address=:80
+    ports:
+      - "80:80"
+      - "8088:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - legislagd
+    profiles: ["portal", "legislativo", "administrativo", "atendimento", "monitoramento", "completo"]
     labels:
-      br.org.sertaodigital.legislagd.description: "Placeholder documentado; nao representa ambiente de producao."
+      br.org.sertaodigital.legislagd.description: "Proxy local de desenvolvimento para dominios *.local."
+
+  sapl-placeholder:
+    image: traefik/whoami:v1.10
+    networks:
+      - legislagd
+    profiles: ["legislativo", "completo"]
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.sapl.rule: "Host(`sapl.local`)"
+      traefik.http.routers.sapl.entrypoints: "web"
+      traefik.http.services.sapl.loadbalancer.server.port: "80"
+      br.org.sertaodigital.legislagd.component: "SAPL-SD placeholder"
+
+  portal-placeholder:
+    image: traefik/whoami:v1.10
+    networks:
+      - legislagd
+    profiles: ["portal", "completo"]
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.portal.rule: "Host(`portal.local`)"
+      traefik.http.routers.portal.entrypoints: "web"
+      traefik.http.services.portal.loadbalancer.server.port: "80"
+      br.org.sertaodigital.legislagd.component: "PortalModelo-SD placeholder"
+
+  ecidade-placeholder:
+    image: traefik/whoami:v1.10
+    networks:
+      - legislagd
+    profiles: ["administrativo", "completo"]
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.ecidade.rule: "Host(`ecidade.local`)"
+      traefik.http.routers.ecidade.entrypoints: "web"
+      traefik.http.services.ecidade.loadbalancer.server.port: "80"
+      br.org.sertaodigital.legislagd.component: "e-Cidade-SD placeholder"
+
+  sigi-placeholder:
+    image: traefik/whoami:v1.10
+    networks:
+      - legislagd
+    profiles: ["atendimento", "completo"]
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.sigi.rule: "Host(`sigi.local`)"
+      traefik.http.routers.sigi.entrypoints: "web"
+      traefik.http.services.sigi.loadbalancer.server.port: "80"
+      br.org.sertaodigital.legislagd.component: "SIGI-SD placeholder"
+
+networks:
+  legislagd:
+    name: legislagd

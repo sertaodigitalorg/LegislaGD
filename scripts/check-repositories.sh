@@ -3,7 +3,31 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 WORKSPACE_DIR="$(cd "${ROOT_DIR}/.." && pwd)"
-REPOS=("LegislaGD" "SAPL-SD" "PortalModelo-SD" "e-Cidade-SD" "SIGI-SD")
+
+if [[ -f "${ROOT_DIR}/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  . "${ROOT_DIR}/.env"
+  set +a
+fi
+
+REPOS=("LegislaGD")
+
+if [[ "${LEGISLAGD_ENABLE_PORTAL:-1}" == "1" || "${LEGISLAGD_ENABLE_PORTAL:-1}" == "true" || "${LEGISLAGD_ENABLE_PORTAL:-1}" == "yes" || "${LEGISLAGD_ENABLE_PORTAL:-1}" == "on" ]]; then
+  REPOS+=("PortalModelo-SD")
+fi
+
+if [[ "${LEGISLAGD_ENABLE_SAPL:-1}" == "1" || "${LEGISLAGD_ENABLE_SAPL:-1}" == "true" || "${LEGISLAGD_ENABLE_SAPL:-1}" == "yes" || "${LEGISLAGD_ENABLE_SAPL:-1}" == "on" ]]; then
+  REPOS+=("SAPL-SD")
+fi
+
+if [[ "${LEGISLAGD_ENABLE_SIGI:-1}" == "1" || "${LEGISLAGD_ENABLE_SIGI:-1}" == "true" || "${LEGISLAGD_ENABLE_SIGI:-1}" == "yes" || "${LEGISLAGD_ENABLE_SIGI:-1}" == "on" ]]; then
+  REPOS+=("SIGI-SD")
+fi
+
+if [[ "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "1" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "true" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "yes" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "on" ]]; then
+  REPOS+=("e-Cidade-SD")
+fi
 
 for name in "${REPOS[@]}"; do
   target="${WORKSPACE_DIR}/${name}"

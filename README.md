@@ -14,7 +14,7 @@ Plataforma publica e livre de Governo Digital para gestao legislativa, administr
 | e-Cidade-SD | https://github.com/sertaodigitalorg/e-Cidade-SD.git | https://github.com/DBSeller/e-cidade.git |
 | SIGI-SD | https://github.com/sertaodigitalorg/SIGI-SD.git | A confirmar antes de configurar fork/upstream |
 
-O LegislaGD e o ponto central de documentacao, governanca, arquitetura, infraestrutura de desenvolvimento e coordenacao entre componentes. Os sistemas continuam independentes, com historico, licenca e evolucao proprios.
+O LegislaGD e a plataforma central legislativa aberta: concentra a experiencia de desenvolvimento, a documentacao, a governanca, a arquitetura, a infraestrutura local e a coordenacao de integracoes entre os componentes. SAPL-SD, PortalModelo-SD, SIGI-SD e e-Cidade-SD continuam independentes, com historico, licenca e evolucao proprios, mas sao operados pelo LegislaGD como modulos da plataforma.
 
 ## Missao
 
@@ -88,3 +88,27 @@ Use os scripts em `scripts/` para clonar e inspecionar componentes sem sobrescre
 ```
 
 Esses scripts nao executam `reset`, nao alteram branches automaticamente e nao apagam diretorios.
+
+### Plataforma local integrada
+
+O LegislaGD sobe a plataforma central de desenvolvimento com Traefik e nomes locais amigaveis:
+
+```bash
+make up
+make urls
+```
+
+A subida principal inclui PortalModelo-SD, SAPL-SD e SIGI-SD por padrao. Cada modulo pode ser desabilitado no `.env` com `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0`. O e-Cidade-SD permanece fora desta etapa ate a integracao administrativa ser preparada.
+
+Quando um modulo ainda nao existe no workspace, o LegislaGD clona automaticamente o fork configurado no `.env` na branch definida: `dev` para desenvolvimento local, `hml` para homologacao ou `main` para base principal/producao. As URLs padrao apontam para a organizacao Sertao Digital, mas podem ser trocadas por outra fonte usando `PORTALMODELO_SD_GIT_URL`, `SAPL_SD_GIT_URL` e `SIGI_SD_GIT_URL`. Repositorios locais ja existentes sao preservados.
+
+Tambem e possivel subir ou derrubar um modulo isolado sem perder o proxy central:
+
+```bash
+make up sapl
+make up portal
+make up sigi
+make down sapl
+```
+
+Consulte `docs/implantacao/desenvolvimento-local.md` para comandos, URLs e detalhes da orquestracao.

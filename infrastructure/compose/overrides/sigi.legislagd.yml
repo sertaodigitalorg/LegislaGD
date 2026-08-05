@@ -1,0 +1,86 @@
+services:
+  traefik:
+    profiles:
+      - standalone
+
+  symfony-admin:
+    networks:
+      - sigi-network
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.symfony-admin.rule=Host(`sigi.legislagd.localhost`) || Host(`admin.sigi.legislagd.localhost`) || Host(`admin.sigi.localhost`)
+      - traefik.http.routers.symfony-admin.entrypoints=web
+      - traefik.http.services.symfony-admin.loadbalancer.server.port=80
+
+  chatwoot:
+    networks:
+      - sigi-network
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.chatwoot.rule=Host(`chat.sigi.legislagd.localhost`) || Host(`chat.sigi.localhost`)
+      - traefik.http.routers.chatwoot.entrypoints=web
+      - traefik.http.services.chatwoot.loadbalancer.server.port=3000
+
+  botpress:
+    networks:
+      - sigi-network
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.botpress.rule=Host(`bot.sigi.legislagd.localhost`) || Host(`bot.sigi.localhost`)
+      - traefik.http.routers.botpress.entrypoints=web
+      - traefik.http.services.botpress.loadbalancer.server.port=3000
+
+  ollama:
+    networks:
+      - sigi-network
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.ollama.rule=Host(`ia.sigi.legislagd.localhost`) || Host(`ia.sigi.localhost`)
+      - traefik.http.routers.ollama.entrypoints=web
+      - traefik.http.services.ollama.loadbalancer.server.port=11434
+
+  qdrant:
+    networks:
+      - sigi-network
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.qdrant.rule=Host(`qdrant.sigi.legislagd.localhost`) || Host(`qdrant.sigi.localhost`)
+      - traefik.http.routers.qdrant.entrypoints=web
+      - traefik.http.services.qdrant.loadbalancer.server.port=6333
+
+  portainer:
+    networks:
+      - sigi-network
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.portainer.rule=Host(`portainer.sigi.legislagd.localhost`) || Host(`portainer.sigi.localhost`)
+      - traefik.http.routers.portainer.entrypoints=web
+      - traefik.http.services.portainer.loadbalancer.server.port=9000
+
+  pgadmin:
+    networks:
+      - sigi-network
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.pgadmin.rule=Host(`pgadmin.sigi.legislagd.localhost`) || Host(`pgadmin.sigi.localhost`)
+      - traefik.http.routers.pgadmin.entrypoints=web
+      - traefik.http.services.pgadmin.loadbalancer.server.port=80
+
+networks:
+  legislagd:
+    external: true
+    name: legislagd

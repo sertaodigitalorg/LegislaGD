@@ -1,6 +1,6 @@
 # Visao geral da arquitetura
 
-O LegislaGD coordena componentes independentes por contratos, APIs e processos auditaveis.
+O LegislaGD e a plataforma central legislativa aberta. Ele coordena componentes independentes por contratos, APIs, infraestrutura compartilhada de desenvolvimento e processos auditaveis.
 
 ```text
 Cidadao e servidores
