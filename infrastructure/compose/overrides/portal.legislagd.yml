@@ -1,5 +1,6 @@
 services:
   portalmodelo:
+    command: sh -lc "set -e; if [ ! -x bin/instance ]; then make buildout; fi; mkdir -p var/log tmp; chmod -R a+rwx var tmp; make fg"
     networks:
       - default
       - legislagd

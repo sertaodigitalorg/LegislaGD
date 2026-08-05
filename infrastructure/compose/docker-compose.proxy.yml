@@ -2,8 +2,10 @@ name: legislagd
 
 services:
   proxy:
-    image: traefik:v3.1
+    image: traefik:latest
     container_name: legislagd-traefik
+    environment:
+      DOCKER_API_VERSION: "1.54"
     command:
       - --api.dashboard=true
       - --api.insecure=true

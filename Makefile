@@ -8,6 +8,7 @@ DATABASE_COMPOSE = docker compose -f infrastructure/compose/docker-compose.datab
 PORTAL_COMPOSE = docker compose -p portalmodelo -f ../PortalModelo-SD/docker-compose.portal.yml -f infrastructure/compose/overrides/portal.legislagd.yml
 SAPL_COMPOSE = docker compose -p sapl -f ../SAPL-SD/docker/docker-compose-dev-db.yml -f infrastructure/compose/overrides/sapl.legislagd.yml
 SIGI_COMPOSE = docker compose -p sigi -f ../SIGI-SD/docker-compose.yml -f infrastructure/compose/overrides/sigi.legislagd.yml
+SIGI_SERVICES = redis symfony-admin sigi-worker chatwoot chatwoot-worker botpress ollama qdrant portainer pgadmin
 
 LEGISLAGD_ENABLE_PORTAL ?= 1
 LEGISLAGD_ENABLE_SAPL ?= 1
@@ -26,9 +27,10 @@ PLATFORM_MODULES += sigi
 endif
 SELECTED_MODULES = $(or $(filter $(MODULES),$(MAKECMDGOALS)),all)
 
-.PHONY: help check clone bootstrap-repos validate up down stop restart ps logs config pull build urls \
+.PHONY: help check clone bootstrap-repos validate up down stop restart ps logs config pull build migrate urls \
 	up-all up-completo up-dev up-platform up-sapl up-portal up-sigi up-proxy \
 	up-database down-database stop-database restart-database ps-database logs-database config-database pull-database \
+	migrate-all migrate-completo migrate-dev migrate-sapl migrate-sigi \
 	down-all down-completo down-dev down-platform down-sapl down-portal down-sigi down-proxy \
 	stop-all stop-completo stop-dev stop-platform stop-sapl stop-portal stop-sigi stop-proxy \
 	restart-all restart-completo restart-dev restart-sapl restart-portal restart-sigi restart-proxy \
@@ -47,6 +49,7 @@ help:
 	@echo "  make down            Derruba toda a plataforma central"
 	@echo "  make restart         Reinicia toda a plataforma central"
 	@echo "  make ps              Lista os containers da plataforma"
+	@echo "  make migrate         Aplica migracoes/esquemas dos modulos integrados"
 	@echo "  make urls            Mostra os enderecos locais"
 	@echo "  make ps database     Lista o Postgres central"
 	@echo ""
@@ -99,10 +102,24 @@ up-portal: bootstrap-repos up-proxy
 up-sapl build-sapl: export LEGISLAGD_ENABLE_SAPL=1
 up-sapl: bootstrap-repos up-database up-proxy
 	$(SAPL_COMPOSE) up -d --build
+	@$(MAKE) migrate-sapl
 
 up-sigi build-sigi: export LEGISLAGD_ENABLE_SIGI=1
 up-sigi: bootstrap-repos up-database up-proxy
-	$(SIGI_COMPOSE) up -d
+	$(SIGI_COMPOSE) up -d --build --no-deps $(SIGI_SERVICES)
+	@$(MAKE) migrate-sigi
+
+migrate: $(addprefix migrate-,$(SELECTED_MODULES))
+
+migrate-all: migrate-sapl migrate-sigi
+migrate-completo: migrate-all
+migrate-dev: migrate-all
+
+migrate-sapl:
+	$(SAPL_COMPOSE) exec -T sapl-dev python3 manage.py migrate --noinput
+
+migrate-sigi:
+	$(SIGI_COMPOSE) exec -T symfony-admin php bin/console doctrine:schema:update --force --no-interaction
 
 down: $(addprefix down-,$(SELECTED_MODULES))
 

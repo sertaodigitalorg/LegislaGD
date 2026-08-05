@@ -46,5 +46,5 @@ for name in "${REPOS[@]}"; do
   echo "tags recentes:"
   git -C "${target}" tag --sort=-creatordate | head -n 5 || true
   echo "alteracoes locais:"
-  git -C "${target}" status --short | head -n 20 || true
+  timeout 10 git -C "${target}" status --short -uno | head -n 20 || echo "alteracoes locais: ignorado por timeout"
 done

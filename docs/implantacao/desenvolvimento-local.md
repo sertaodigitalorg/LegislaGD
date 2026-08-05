@@ -107,8 +107,11 @@ Esse comando sobe:
 - PortalModelo-SD, quando `LEGISLAGD_ENABLE_PORTAL=1`.
 - SAPL-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_SAPL=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
+- Migracoes do SAPL-SD e sincronizacao de schema do SIGI-SD no PostgreSQL central.
 
 Com o `.env.example` ou sem `.env`, esses tres modulos ficam habilitados e a branch padrao e `dev`. O e-Cidade-SD nao sobe nesta etapa.
+
+Observacao sobre o SIGI-SD: no estado atual do fork, as migrations Doctrine existentes carregam SQL especifico de MySQL. Para desenvolvimento local integrado com PostgreSQL, o LegislaGD usa `doctrine:schema:update` no alvo `make migrate-sigi`. Antes de homologacao/producao, as migrations do SIGI-SD devem ser regeneradas para PostgreSQL.
 
 ## Banco de dados central
 
@@ -206,9 +209,13 @@ make logs proxy
 make config
 make build
 make pull
+make migrate
+scripts/test-wsl-stack.sh
 ```
 
 `make logs` exige um modulo porque acompanha logs em modo continuo.
+
+O script `scripts/test-wsl-stack.sh` deve ser executado dentro do WSL Ubuntu depois de `make up`; ele consulta as URLs via Traefik, lista containers PostgreSQL ativos e mostra as branches locais dos modulos.
 
 ## Traefik central
 

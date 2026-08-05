@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+urls=(
+  "http://portal.legislagd.localhost"
+  "http://sapl.legislagd.localhost"
+  "http://sigi.legislagd.localhost"
+  "http://chat.sigi.legislagd.localhost"
+  "http://qdrant.sigi.legislagd.localhost/collections"
+  "http://ia.sigi.legislagd.localhost/api/version"
+)
+
+for url in "${urls[@]}"; do
+  code="$(curl -s -o /tmp/legislagd-check -w '%{http_code}' --max-time 20 "$url")"
+  printf "%s %s\n" "$code" "$url"
+done
+
+echo "--- postgres containers ---"
+docker ps --format "{{.Names}} {{.Image}}" | grep -i postgres || true
+
+echo "--- branches ---"
+git -C /mnt/c/PortalModelo-SD branch --show-current
+git -C /mnt/c/SAPL-SD branch --show-current
+git -C /mnt/c/SIGI-SD branch --show-current

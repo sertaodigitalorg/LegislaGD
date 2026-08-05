@@ -109,7 +109,7 @@ while IFS= read -r name; do
     echo "origin: $(git -C "${target}" remote get-url origin 2>/dev/null || echo 'nao configurado')"
     echo "upstream: $(git -C "${target}" remote get-url upstream 2>/dev/null || echo 'nao configurado')"
     echo "branch atual: $(git -C "${target}" branch --show-current 2>/dev/null || echo 'indefinida')"
-    git -C "${target}" status --short || true
+    timeout 10 git -C "${target}" status --short -uno || echo "status local ignorado por timeout"
   elif [[ -e "${target}" ]]; then
     echo "caminho existe mas nao e repositorio Git: ${target}"
   else
