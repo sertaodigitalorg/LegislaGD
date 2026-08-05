@@ -98,6 +98,8 @@ make up
 make urls
 ```
 
+A execucao padrao de `make up`, sem personalizacao no `.env`, usa `LEGISLAGD_ENV=development`, clona repositorios ausentes na branch `dev` e sobe PortalModelo-SD, SAPL-SD e SIGI-SD. Esse e o fluxo local esperado para desenvolvimento.
+
 A subida principal inclui PortalModelo-SD, SAPL-SD e SIGI-SD por padrao. Cada modulo pode ser desabilitado no `.env` com `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0`. O e-Cidade-SD permanece fora desta etapa ate a integracao administrativa ser preparada.
 
 Quando um modulo ainda nao existe no workspace, o LegislaGD clona automaticamente o fork configurado no `.env` na branch definida: `dev` para desenvolvimento local, `hml` para homologacao ou `main` para base principal/producao. As URLs padrao apontam para a organizacao Sertao Digital, mas podem ser trocadas por outra fonte usando `PORTALMODELO_SD_GIT_URL`, `SAPL_SD_GIT_URL` e `SIGI_SD_GIT_URL`. Repositorios locais ja existentes sao preservados.

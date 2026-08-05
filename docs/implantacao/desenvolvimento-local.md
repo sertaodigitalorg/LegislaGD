@@ -2,6 +2,21 @@
 
 Use `scripts/bootstrap.sh` para preparar diretorios ausentes, copiar `.env.example` para `.env` quando necessario e clonar componentes ausentes.
 
+## Padrao local
+
+Por padrao, executar `make up` no repositorio `C:\LegislaGD` sobe o ambiente `development` da plataforma central usando a branch `dev` dos modulos.
+
+Sem alterar o `.env`, o comportamento esperado e:
+
+- `LEGISLAGD_ENV=development`.
+- `LEGISLAGD_COMPONENT_BRANCH=dev`.
+- `LEGISLAGD_ENABLE_PORTAL=1`.
+- `LEGISLAGD_ENABLE_SAPL=1`.
+- `LEGISLAGD_ENABLE_SIGI=1`.
+- `LEGISLAGD_INCLUDE_ECIDADE=0`.
+
+Assim, `make up` sobe PortalModelo-SD, SAPL-SD, SIGI-SD e o Traefik central. O e-Cidade-SD permanece desligado nesta etapa.
+
 ## Papel do LegislaGD
 
 O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a orquestracao local, os nomes de acesso, os comandos principais e a documentacao de uso. Os componentes seguem como sistemas independentes, mas durante o desenvolvimento sao tratados como modulos integrados da plataforma:
@@ -43,7 +58,7 @@ ECIDADE_SD_GIT_URL=https://github.com/sertaodigitalorg/e-Cidade-SD.git
 
 ## Branch por ambiente
 
-A branch dos componentes e configurada no `.env` do LegislaGD. O padrao local e `dev`:
+A branch dos componentes e configurada no `.env` do LegislaGD. O padrao local e `dev`, associado ao ambiente `development`:
 
 ```bash
 LEGISLAGD_ENV=development
@@ -90,7 +105,7 @@ Esse comando sobe:
 - SAPL-SD e PostgreSQL de desenvolvimento, quando `LEGISLAGD_ENABLE_SAPL=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
 
-O e-Cidade-SD nao sobe nesta etapa.
+Com o `.env.example` ou sem `.env`, esses tres modulos ficam habilitados e a branch padrao e `dev`. O e-Cidade-SD nao sobe nesta etapa.
 
 Para derrubar tudo:
 
