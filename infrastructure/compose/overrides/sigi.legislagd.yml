@@ -1,9 +1,17 @@
 services:
+  postgres:
+    profiles:
+      - standalone
+
   traefik:
     profiles:
       - standalone
 
   symfony-admin:
+    environment:
+      DATABASE_URL: postgresql://${SIGI_DB_USER:-sigi}:${SIGI_DB_PASSWORD:-sigi_dev_password}@legislagd-postgres:5432/${SIGI_DB_NAME:-sigi_sd}?serverVersion=16&charset=utf8
+    depends_on:
+      - redis
     networks:
       - sigi-network
       - legislagd
@@ -14,7 +22,24 @@ services:
       - traefik.http.routers.symfony-admin.entrypoints=web
       - traefik.http.services.symfony-admin.loadbalancer.server.port=80
 
+  sigi-worker:
+    environment:
+      DATABASE_URL: postgresql://${SIGI_DB_USER:-sigi}:${SIGI_DB_PASSWORD:-sigi_dev_password}@legislagd-postgres:5432/${SIGI_DB_NAME:-sigi_sd}?serverVersion=16&charset=utf8
+    depends_on:
+      - redis
+      - symfony-admin
+    networks:
+      - sigi-network
+      - legislagd
+
   chatwoot:
+    environment:
+      POSTGRES_HOST: legislagd-postgres
+      POSTGRES_DATABASE: ${CHATWOOT_DB_NAME:-chatwoot_production}
+      POSTGRES_USERNAME: ${CHATWOOT_DB_USER:-chatwoot}
+      POSTGRES_PASSWORD: ${CHATWOOT_DB_PASSWORD:-chatwoot_dev_password}
+    depends_on:
+      - redis
     networks:
       - sigi-network
       - legislagd
@@ -24,6 +49,19 @@ services:
       - traefik.http.routers.chatwoot.rule=Host(`chat.sigi.legislagd.localhost`) || Host(`chat.sigi.localhost`)
       - traefik.http.routers.chatwoot.entrypoints=web
       - traefik.http.services.chatwoot.loadbalancer.server.port=3000
+
+  chatwoot-worker:
+    environment:
+      POSTGRES_HOST: legislagd-postgres
+      POSTGRES_DATABASE: ${CHATWOOT_DB_NAME:-chatwoot_production}
+      POSTGRES_USERNAME: ${CHATWOOT_DB_USER:-chatwoot}
+      POSTGRES_PASSWORD: ${CHATWOOT_DB_PASSWORD:-chatwoot_dev_password}
+    depends_on:
+      - redis
+      - chatwoot
+    networks:
+      - sigi-network
+      - legislagd
 
   botpress:
     networks:
@@ -70,6 +108,12 @@ services:
       - traefik.http.services.portainer.loadbalancer.server.port=9000
 
   pgadmin:
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-admin@sigi.dev.br}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-sigi_pgadmin_dev}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    depends_on: []
     networks:
       - sigi-network
       - legislagd

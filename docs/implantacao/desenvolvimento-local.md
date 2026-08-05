@@ -17,6 +17,8 @@ Sem alterar o `.env`, o comportamento esperado e:
 
 Assim, `make up` sobe PortalModelo-SD, SAPL-SD, SIGI-SD e o Traefik central. O e-Cidade-SD permanece desligado nesta etapa.
 
+O banco da plataforma integrada tambem e centralizado: `make up` sobe um unico container PostgreSQL chamado `legislagd-postgres`, com bases e usuarios separados para cada modulo.
+
 ## Papel do LegislaGD
 
 O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a orquestracao local, os nomes de acesso, os comandos principais e a documentacao de uso. Os componentes seguem como sistemas independentes, mas durante o desenvolvimento sao tratados como modulos integrados da plataforma:
@@ -100,12 +102,40 @@ make up
 Esse comando sobe:
 
 - Clonagem dos forks ausentes, conforme a branch configurada.
+- PostgreSQL central do LegislaGD.
 - Traefik central do LegislaGD.
 - PortalModelo-SD, quando `LEGISLAGD_ENABLE_PORTAL=1`.
-- SAPL-SD e PostgreSQL de desenvolvimento, quando `LEGISLAGD_ENABLE_SAPL=1`.
+- SAPL-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_SAPL=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
 
 Com o `.env.example` ou sem `.env`, esses tres modulos ficam habilitados e a branch padrao e `dev`. O e-Cidade-SD nao sobe nesta etapa.
+
+## Banco de dados central
+
+No modo integrado do LegislaGD existe apenas uma instalacao PostgreSQL:
+
+| Banco | Usuario | Uso |
+| --- | --- | --- |
+| `sapl_sd` | `sapl` | SAPL-SD |
+| `sigi_sd` | `sigi` | SIGI-SD admin e worker |
+| `chatwoot_production` | `chatwoot` | Chatwoot do SIGI-SD |
+
+As credenciais podem ser alteradas no `.env`:
+
+```bash
+LEGISLAGD_POSTGRES_PORT=5432
+SAPL_DB_NAME=sapl_sd
+SAPL_DB_USER=sapl
+SAPL_DB_PASSWORD=sapl_dev_password
+SIGI_DB_NAME=sigi_sd
+SIGI_DB_USER=sigi
+SIGI_DB_PASSWORD=sigi_dev_password
+CHATWOOT_DB_NAME=chatwoot_production
+CHATWOOT_DB_USER=chatwoot
+CHATWOOT_DB_PASSWORD=chatwoot_dev_password
+```
+
+Os Postgres dos composes originais dos modulos ficam em modo `standalone` quando eles sao executados pelo LegislaGD. Assim, os repositorios ainda podem rodar isolados com seus composes proprios, mas a plataforma integrada usa somente `legislagd-postgres`.
 
 Para derrubar tudo:
 

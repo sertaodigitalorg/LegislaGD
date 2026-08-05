@@ -1,0 +1,34 @@
+name: legislagd
+
+services:
+  database:
+    image: pgvector/pgvector:pg16
+    container_name: legislagd-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${LEGISLAGD_POSTGRES_DB:-legislagd}
+      POSTGRES_USER: ${LEGISLAGD_POSTGRES_USER:-legislagd}
+      POSTGRES_PASSWORD: ${LEGISLAGD_POSTGRES_PASSWORD:-legislagd_dev_password}
+      SAPL_DB_NAME: ${SAPL_DB_NAME:-sapl_sd}
+      SAPL_DB_USER: ${SAPL_DB_USER:-sapl}
+      SAPL_DB_PASSWORD: ${SAPL_DB_PASSWORD:-sapl_dev_password}
+      SIGI_DB_NAME: ${SIGI_DB_NAME:-sigi_sd}
+      SIGI_DB_USER: ${SIGI_DB_USER:-sigi}
+      SIGI_DB_PASSWORD: ${SIGI_DB_PASSWORD:-sigi_dev_password}
+      CHATWOOT_DB_NAME: ${CHATWOOT_DB_NAME:-chatwoot_production}
+      CHATWOOT_DB_USER: ${CHATWOOT_DB_USER:-chatwoot}
+      CHATWOOT_DB_PASSWORD: ${CHATWOOT_DB_PASSWORD:-chatwoot_dev_password}
+    ports:
+      - "${LEGISLAGD_POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - legislagd_postgres_data:/var/lib/postgresql/data
+      - ../database/init:/docker-entrypoint-initdb.d:ro
+    networks:
+      - legislagd
+
+networks:
+  legislagd:
+    name: legislagd
+
+volumes:
+  legislagd_postgres_data:

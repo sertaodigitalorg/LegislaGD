@@ -1,5 +1,11 @@
 services:
+  sapldb-dev:
+    profiles:
+      - standalone
+
   sapl-dev:
+    environment:
+      DATABASE_URL: postgresql://${SAPL_DB_USER:-sapl}:${SAPL_DB_PASSWORD:-sapl_dev_password}@legislagd-postgres:5432/${SAPL_DB_NAME:-sapl_sd}
     networks:
       - sapl-net-dev
       - legislagd

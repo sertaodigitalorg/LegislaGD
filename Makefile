@@ -4,6 +4,7 @@ export
 endif
 
 PROXY_COMPOSE = docker compose -f infrastructure/compose/docker-compose.proxy.yml
+DATABASE_COMPOSE = docker compose -f infrastructure/compose/docker-compose.database.yml
 PORTAL_COMPOSE = docker compose -p portalmodelo -f ../PortalModelo-SD/docker-compose.portal.yml -f infrastructure/compose/overrides/portal.legislagd.yml
 SAPL_COMPOSE = docker compose -p sapl -f ../SAPL-SD/docker/docker-compose-dev-db.yml -f infrastructure/compose/overrides/sapl.legislagd.yml
 SIGI_COMPOSE = docker compose -p sigi -f ../SIGI-SD/docker-compose.yml -f infrastructure/compose/overrides/sigi.legislagd.yml
@@ -12,7 +13,7 @@ LEGISLAGD_ENABLE_PORTAL ?= 1
 LEGISLAGD_ENABLE_SAPL ?= 1
 LEGISLAGD_ENABLE_SIGI ?= 1
 
-MODULES = all completo dev sapl portal sigi proxy
+MODULES = all completo dev sapl portal sigi proxy database
 PLATFORM_MODULES =
 ifneq (,$(filter 1 true yes on,$(LEGISLAGD_ENABLE_PORTAL)))
 PLATFORM_MODULES += portal
@@ -27,6 +28,7 @@ SELECTED_MODULES = $(or $(filter $(MODULES),$(MAKECMDGOALS)),all)
 
 .PHONY: help check clone bootstrap-repos validate up down stop restart ps logs config pull build urls \
 	up-all up-completo up-dev up-platform up-sapl up-portal up-sigi up-proxy \
+	up-database down-database stop-database restart-database ps-database logs-database config-database pull-database \
 	down-all down-completo down-dev down-platform down-sapl down-portal down-sigi down-proxy \
 	stop-all stop-completo stop-dev stop-platform stop-sapl stop-portal stop-sigi stop-proxy \
 	restart-all restart-completo restart-dev restart-sapl restart-portal restart-sigi restart-proxy \
@@ -46,6 +48,7 @@ help:
 	@echo "  make restart         Reinicia toda a plataforma central"
 	@echo "  make ps              Lista os containers da plataforma"
 	@echo "  make urls            Mostra os enderecos locais"
+	@echo "  make ps database     Lista o Postgres central"
 	@echo ""
 	@echo "Padrao local:"
 	@echo "  ambiente: $${LEGISLAGD_ENV:-development}"
@@ -59,7 +62,7 @@ help:
 	@echo "  make down sapl       Derruba somente SAPL-SD"
 	@echo "  make down sigi       Derruba somente SIGI-SD"
 	@echo ""
-	@echo "Modulos habilitados no make up padrao: $(or $(PLATFORM_MODULES),nenhum)"
+	@echo "Modulos habilitados no make up padrao: database $(or $(PLATFORM_MODULES),nenhum)"
 	@echo ""
 	@echo "Observacao: e-Cidade-SD nao sobe nesta etapa."
 
@@ -80,8 +83,11 @@ up-all: up-platform
 up-completo: up-platform
 up-dev: up-platform
 
-up-platform: bootstrap-repos up-proxy $(addprefix up-,$(PLATFORM_MODULES))
+up-platform: bootstrap-repos up-database up-proxy $(addprefix up-,$(PLATFORM_MODULES))
 	@$(MAKE) urls
+
+up-database:
+	$(DATABASE_COMPOSE) up -d
 
 up-proxy:
 	$(PROXY_COMPOSE) up -d
@@ -91,11 +97,11 @@ up-portal: bootstrap-repos up-proxy
 	$(PORTAL_COMPOSE) up -d --build
 
 up-sapl build-sapl: export LEGISLAGD_ENABLE_SAPL=1
-up-sapl: bootstrap-repos up-proxy
+up-sapl: bootstrap-repos up-database up-proxy
 	$(SAPL_COMPOSE) up -d --build
 
 up-sigi build-sigi: export LEGISLAGD_ENABLE_SIGI=1
-up-sigi: bootstrap-repos up-proxy
+up-sigi: bootstrap-repos up-database up-proxy
 	$(SIGI_COMPOSE) up -d
 
 down: $(addprefix down-,$(SELECTED_MODULES))
@@ -104,7 +110,7 @@ down-all: down-platform
 down-completo: down-platform
 down-dev: down-platform
 
-down-platform: down-sigi down-sapl down-portal down-proxy
+down-platform: down-sigi down-sapl down-portal down-database down-proxy
 
 down-portal:
 	$(PORTAL_COMPOSE) down
@@ -115,6 +121,9 @@ down-sapl:
 down-sigi:
 	$(SIGI_COMPOSE) down
 
+down-database:
+	$(DATABASE_COMPOSE) down
+
 down-proxy:
 	$(PROXY_COMPOSE) down
 
@@ -124,7 +133,7 @@ stop-all: stop-platform
 stop-completo: stop-platform
 stop-dev: stop-platform
 
-stop-platform: stop-sigi stop-sapl stop-portal stop-proxy
+stop-platform: stop-sigi stop-sapl stop-portal stop-database stop-proxy
 
 stop-portal:
 	$(PORTAL_COMPOSE) stop
@@ -134,6 +143,9 @@ stop-sapl:
 
 stop-sigi:
 	$(SIGI_COMPOSE) stop
+
+stop-database:
+	$(DATABASE_COMPOSE) stop
 
 stop-proxy:
 	$(PROXY_COMPOSE) stop
@@ -147,15 +159,19 @@ restart-portal: down-portal up-portal
 restart-sapl: down-sapl up-sapl
 restart-sigi: down-sigi up-sigi
 restart-proxy: down-proxy up-proxy
+restart-database: down-database up-database
 
 ps: $(addprefix ps-,$(SELECTED_MODULES))
 
-ps-all: ps-proxy ps-portal ps-sapl ps-sigi
+ps-all: ps-database ps-proxy ps-portal ps-sapl ps-sigi
 ps-completo: ps-all
 ps-dev: ps-all
 
 ps-proxy:
 	$(PROXY_COMPOSE) ps
+
+ps-database:
+	$(DATABASE_COMPOSE) ps
 
 ps-portal:
 	$(PORTAL_COMPOSE) ps
@@ -174,6 +190,7 @@ logs-all:
 	@echo "  make logs sapl"
 	@echo "  make logs sigi"
 	@echo "  make logs proxy"
+	@echo "  make logs database"
 
 logs-completo: logs-all
 logs-dev: logs-all
@@ -190,14 +207,20 @@ logs-sigi:
 logs-proxy:
 	$(PROXY_COMPOSE) logs -f proxy
 
+logs-database:
+	$(DATABASE_COMPOSE) logs -f database
+
 config: $(addprefix config-,$(SELECTED_MODULES))
 
-config-all: config-proxy config-portal config-sapl config-sigi
+config-all: config-database config-proxy config-portal config-sapl config-sigi
 config-completo: config-all
 config-dev: config-all
 
 config-proxy:
 	$(PROXY_COMPOSE) config
+
+config-database:
+	$(DATABASE_COMPOSE) config
 
 config-portal:
 	$(PORTAL_COMPOSE) config
@@ -210,12 +233,15 @@ config-sigi:
 
 pull: $(addprefix pull-,$(SELECTED_MODULES))
 
-pull-all: pull-proxy pull-portal pull-sapl pull-sigi
+pull-all: pull-database pull-proxy pull-portal pull-sapl pull-sigi
 pull-completo: pull-all
 pull-dev: pull-all
 
 pull-proxy:
 	$(PROXY_COMPOSE) pull
+
+pull-database:
+	$(DATABASE_COMPOSE) pull
 
 pull-portal:
 	$(PORTAL_COMPOSE) pull
@@ -248,6 +274,7 @@ urls:
 	@echo "LegislaGD central:"
 	@echo "  http://legislagd.localhost"
 	@echo "  http://proxy.legislagd.localhost"
+	@echo "  Postgres central: localhost:$${LEGISLAGD_POSTGRES_PORT:-5432}"
 	@echo ""
 	@echo "Modulos integrados:"
 	@echo "  PortalModelo-SD: http://portal.legislagd.localhost"
