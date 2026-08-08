@@ -197,6 +197,22 @@ Enderecos principais:
 
 Os nomes `*.localhost` normalmente resolvem para a maquina local sem editar `hosts`.
 
+## Acesso SAPL-SD
+
+No ambiente local integrado, o SAPL-SD usa por padrao:
+
+| Usuario | Senha |
+| --- | --- |
+| `admin` | `interlegis` |
+| `interlegis` | `interlegis` |
+
+Se a base ja existir e a senha nao funcionar, execute no WSL Ubuntu:
+
+```bash
+cd /mnt/c/LegislaGD
+scripts/reset-sapl-admin.sh
+```
+
 ## Comandos uteis
 
 ```bash
