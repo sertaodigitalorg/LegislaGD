@@ -15,3 +15,5 @@ build/
 *.sqlite3
 *.dump
 *.sql
+/modules/*
+!/modules/.gitkeep

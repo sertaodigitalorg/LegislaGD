@@ -33,7 +33,7 @@ Data: 2026-08-02
 - O ambiente possui `git`.
 - O GitHub CLI foi instalado em `C:\Program Files\GitHub CLI\gh.exe` e autenticado como `wellingtoncs`.
 - Antes da publicacao, `SAPL-SD` e `PortalModelo-SD` responderam sem refs publicas visiveis em `sertaodigitalorg`.
-- Os diretorios irmaos foram baixados em `C:\SAPL-SD`, `C:\PortalModelo-SD`, `C:\e-Cidade-SD` e `C:\SIGI-SD`.
+- Na publicacao inicial, os diretorios irmaos foram baixados em `C:\SAPL-SD`, `C:\PortalModelo-SD`, `C:\e-Cidade-SD` e `C:\SIGI-SD`. O layout operacional recomendado posteriormente passou a usar `C:\LegislaGD\modules\...`.
 - O clone local do e-Cidade-SD no Windows apresenta 8 modificacoes aparentes por conflito de nomes sensiveis a maiusculas/minusculas e normalizacao de checkout. O Windows negou habilitar case-sensitive em `C:\e-Cidade-SD`.
 - Ao publicar e-Cidade-SD, o GitHub alertou que `docker/database/ecidade_base.sql.gz` tem 68,90 MB, acima da recomendacao de 50 MB. O arquivo foi aceito, mas deve ser avaliado para Git LFS ou outra estrategia futura.
 - Confirmacao posterior: `DBSeller/e-cidade/master` e `sertaodigitalorg/e-Cidade-SD/main` apontam para `000194437f016c436b26c656dd1eee7ab6778f8c`.
@@ -44,6 +44,15 @@ Data: 2026-08-02
 - `C:\PortalModelo-SD`: base `interlegis/portalmodelo`, branch local `master`, `origin` apontando para `sertaodigitalorg/PortalModelo-SD` e `upstream` apontando para `interlegis/portalmodelo`.
 - `C:\e-Cidade-SD`: base `DBSeller/e-cidade`, branch local `master`, `origin` apontando para `sertaodigitalorg/e-Cidade-SD` e `upstream` apontando para `DBSeller/e-cidade`; checkout local requer WSL/Linux ou diretorio case-sensitive para ficar totalmente limpa.
 - `C:\SIGI-SD`: repositorio proprio `sertaodigitalorg/SIGI-SD`, branch local `main`.
+
+## Layout operacional recomendado
+
+- `C:\LegislaGD\modules\SAPL-SD`: clone do fork `sertaodigitalorg/SAPL-SD`.
+- `C:\LegislaGD\modules\PortalModelo-SD`: clone do fork `sertaodigitalorg/PortalModelo-SD`.
+- `C:\LegislaGD\modules\e-Cidade-SD`: clone do fork `sertaodigitalorg/e-Cidade-SD`.
+- `C:\LegislaGD\modules\SIGI-SD`: clone do repositorio proprio `sertaodigitalorg/SIGI-SD`.
+
+Os clones antigos em `C:\...` podem ser movidos manualmente depois de verificar alteracoes locais, mas os scripts do LegislaGD nao fazem essa movimentacao automaticamente.
 
 ## Proximos passos
 

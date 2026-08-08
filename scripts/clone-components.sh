@@ -2,13 +2,19 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-WORKSPACE_DIR="$(cd "${ROOT_DIR}/.." && pwd)"
 
 if [[ -f "${ROOT_DIR}/.env" ]]; then
   set -a
   # shellcheck disable=SC1091
   . "${ROOT_DIR}/.env"
   set +a
+fi
+
+COMPONENTS_DIR="${LEGISLAGD_COMPONENTS_DIR:-modules}"
+if [[ "${COMPONENTS_DIR}" = /* ]]; then
+  WORKSPACE_DIR="${COMPONENTS_DIR}"
+else
+  WORKSPACE_DIR="${ROOT_DIR}/${COMPONENTS_DIR}"
 fi
 
 declare -A REPOS=(
@@ -89,12 +95,36 @@ selected_components() {
   fi
 }
 
+clone_from_legacy_if_available() {
+  local name="$1"
+  local branch="$2"
+  local target="$3"
+  local legacy_target="${ROOT_DIR}/../${name}"
+
+  if [[ ! -d "${legacy_target}/.git" ]]; then
+    return 1
+  fi
+
+  if ! git -C "${legacy_target}" show-ref --verify --quiet "refs/heads/${branch}" &&
+     ! git -C "${legacy_target}" show-ref --verify --quiet "refs/remotes/origin/${branch}"; then
+    echo "repositorio local antigo encontrado, mas sem a branch '${branch}': ${legacy_target}"
+    return 1
+  fi
+
+  echo "clonando a partir do repositorio local existente: ${legacy_target}"
+  echo "branch configurada: ${branch}"
+  git clone --branch "${branch}" "${legacy_target}" "${target}"
+}
+
 echo "Workspace: ${WORKSPACE_DIR}"
+echo "Diretorio dos componentes: ${COMPONENTS_DIR}"
 echo "Branch padrao dos componentes: ${LEGISLAGD_COMPONENT_BRANCH:-$(branch_from_env)}"
 echo "PortalModelo-SD habilitado: ${LEGISLAGD_ENABLE_PORTAL:-1}"
 echo "SAPL-SD habilitado: ${LEGISLAGD_ENABLE_SAPL:-1}"
 echo "SIGI-SD habilitado: ${LEGISLAGD_ENABLE_SIGI:-1}"
 echo "e-Cidade-SD incluido: ${LEGISLAGD_INCLUDE_ECIDADE:-0}"
+
+mkdir -p "${WORKSPACE_DIR}"
 
 while IFS= read -r name; do
   target="${WORKSPACE_DIR}/${name}"
@@ -103,6 +133,13 @@ while IFS= read -r name; do
 
   echo
   echo "== ${name} =="
+
+  legacy_target="${ROOT_DIR}/../${name}"
+  if [[ ! -d "${target}/.git" && -d "${legacy_target}/.git" ]]; then
+    echo "aviso: repositorio encontrado no layout antigo: ${legacy_target}"
+    echo "       o padrao atual e: ${target}"
+    echo "       o script nao move automaticamente para preservar alteracoes locais"
+  fi
 
   if [[ -d "${target}/.git" ]]; then
     echo "repositorio existente, sem alterar branch ou historico"
@@ -113,13 +150,18 @@ while IFS= read -r name; do
   elif [[ -e "${target}" ]]; then
     echo "caminho existe mas nao e repositorio Git: ${target}"
   else
-    echo "clonando origem configurada: ${origin}"
-    echo "branch configurada: ${branch}"
-    git clone --branch "${branch}" --single-branch "${origin}" "${target}" || {
+    if clone_from_legacy_if_available "${name}" "${branch}" "${target}"; then
+      git -C "${target}" remote set-url origin "${origin}" || true
+      echo "origin configurado como ${origin}"
+    else
+      echo "clonando origem configurada: ${origin}"
+      echo "branch configurada: ${branch}"
+      git clone --branch "${branch}" --single-branch "${origin}" "${target}" || {
       echo "${name}: falha ao clonar branch '${branch}' de ${origin}."
       echo "Ajuste LEGISLAGD_COMPONENT_BRANCH ou a variavel especifica do modulo no .env."
       exit 1
-    }
+      }
+    fi
   fi
 
   if [[ -d "${target}/.git" && -n "${UPSTREAMS[$name]:-}" ]]; then

@@ -2,13 +2,19 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-WORKSPACE_DIR="$(cd "${ROOT_DIR}/.." && pwd)"
 
 if [[ -f "${ROOT_DIR}/.env" ]]; then
   set -a
   # shellcheck disable=SC1091
   . "${ROOT_DIR}/.env"
   set +a
+fi
+
+COMPONENTS_DIR="${LEGISLAGD_COMPONENTS_DIR:-modules}"
+if [[ "${COMPONENTS_DIR}" = /* ]]; then
+  WORKSPACE_DIR="${COMPONENTS_DIR}"
+else
+  WORKSPACE_DIR="${ROOT_DIR}/${COMPONENTS_DIR}"
 fi
 
 REPOS=("LegislaGD")
@@ -30,12 +36,20 @@ if [[ "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "1" || "${LEGISLAGD_INCLUDE_ECIDADE:-
 fi
 
 for name in "${REPOS[@]}"; do
-  target="${WORKSPACE_DIR}/${name}"
+  if [[ "${name}" == "LegislaGD" ]]; then
+    target="${ROOT_DIR}"
+  else
+    target="${WORKSPACE_DIR}/${name}"
+  fi
   echo
   echo "== ${name} =="
 
   if [[ ! -d "${target}/.git" ]]; then
     echo "status: ausente ou nao e repositorio Git (${target})"
+    legacy_target="${ROOT_DIR}/../${name}"
+    if [[ "${name}" != "LegislaGD" && -d "${legacy_target}/.git" ]]; then
+      echo "aviso: encontrado no layout antigo (${legacy_target})"
+    fi
     continue
   fi
 

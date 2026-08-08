@@ -32,11 +32,11 @@ O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a
 
 - Docker com Docker Compose v2.
 - `make`.
-- Repositorios clonados lado a lado:
+- Componentes clonados dentro do workspace do LegislaGD:
   - `C:\LegislaGD`
-  - `C:\PortalModelo-SD`
-  - `C:\SAPL-SD`
-  - `C:\SIGI-SD`
+  - `C:\LegislaGD\modules\PortalModelo-SD`
+  - `C:\LegislaGD\modules\SAPL-SD`
+  - `C:\LegislaGD\modules\SIGI-SD`
 
 Se algum desses reposititorios ainda nao existir, `make up` chama `scripts/clone-components.sh` antes do Docker Compose. Por padrao, o clone usa os forks oficiais da Sertao Digital:
 
@@ -48,6 +48,15 @@ Se algum desses reposititorios ainda nao existir, `make up` chama `scripts/clone
 | e-Cidade-SD | `https://github.com/sertaodigitalorg/e-Cidade-SD.git` | `https://github.com/DBSeller/e-cidade.git` |
 
 O script nao troca branch, nao executa reset e nao sobrescreve historico de repositorios que ja existem localmente.
+Quando encontra clones no layout antigo lado a lado, como `C:\SAPL-SD`, ele pode usa-los apenas como fonte para criar um novo clone em `modules/`, sem mover ou alterar o repositorio antigo.
+
+O local padrao dos componentes e controlado por `LEGISLAGD_COMPONENTS_DIR`:
+
+```bash
+LEGISLAGD_COMPONENTS_DIR=modules
+```
+
+Esse caminho e relativo a raiz do LegislaGD. Assim, em servidor, a instalacao pode ficar autocontida em um unico diretorio, por exemplo `/opt/legislagd/modules/SAPL-SD`.
 
 As URLs podem ser substituidas no `.env` quando for necessario usar outra fonte:
 
@@ -237,4 +246,4 @@ O script `scripts/test-wsl-stack.sh` deve ser executado dentro do WSL Ubuntu dep
 
 O compose `infrastructure/compose/docker-compose.proxy.yml` cria a rede Docker `legislagd` e sobe um Traefik unico para a plataforma. Os overrides em `infrastructure/compose/overrides/` conectam os modulos a essa rede e adicionam labels de roteamento.
 
-Quando o LegislaGD sobe o SIGI-SD, o Traefik proprio do SIGI fica em profile `standalone` para evitar conflito na porta 80. Se for trabalhar dentro de `C:\SIGI-SD` sem o LegislaGD, os comandos originais do SIGI continuam disponiveis.
+Quando o LegislaGD sobe o SIGI-SD, o Traefik proprio do SIGI fica em profile `standalone` para evitar conflito na porta 80. Se for trabalhar dentro de `C:\LegislaGD\modules\SIGI-SD` sem o LegislaGD, os comandos originais do SIGI continuam disponiveis.

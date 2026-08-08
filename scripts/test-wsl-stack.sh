@@ -19,6 +19,6 @@ echo "--- postgres containers ---"
 docker ps --format "{{.Names}} {{.Image}}" | grep -i postgres || true
 
 echo "--- branches ---"
-git -C /mnt/c/PortalModelo-SD branch --show-current
-git -C /mnt/c/SAPL-SD branch --show-current
-git -C /mnt/c/SIGI-SD branch --show-current
+git -C /mnt/c/LegislaGD/modules/PortalModelo-SD branch --show-current
+git -C /mnt/c/LegislaGD/modules/SAPL-SD branch --show-current
+git -C /mnt/c/LegislaGD/modules/SIGI-SD branch --show-current
