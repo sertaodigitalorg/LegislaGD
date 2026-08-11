@@ -1,7 +1,7 @@
 services:
   proxy:
     labels:
-      traefik.http.routers.traefik.rule: "Host(`proxy.local`) || Host(`legislagd.local`)"
+      traefik.http.routers.traefik.rule: "Host(`proxy.legislagd.localhost`) || Host(`legislagd.localhost`)"
       traefik.http.routers.traefik.entrypoints: "web"
       traefik.http.routers.traefik.service: "api@internal"
       traefik.enable: "true"

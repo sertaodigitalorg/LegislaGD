@@ -7,6 +7,7 @@ services:
     environment:
       ADMIN_PASSWORD: ${SAPL_ADMIN_PASSWORD:-interlegis}
       ADMIN_EMAIL: ${SAPL_ADMIN_EMAIL:-admin@legislagd.localhost}
+      SITE_URL: ${SAPL_SD_URL:-http://sapl.legislagd.localhost}
       DATABASE_URL: postgresql://${SAPL_DB_USER:-sapl}:${SAPL_DB_PASSWORD:-sapl_dev_password}@legislagd-postgres:5432/${SAPL_DB_NAME:-sapl_sd}
     networks:
       - sapl-net-dev
@@ -14,7 +15,7 @@ services:
     labels:
       traefik.enable: "true"
       traefik.docker.network: "legislagd"
-      traefik.http.routers.sapl.rule: "Host(`sapl.legislagd.localhost`) || Host(`sapl.localhost`)"
+      traefik.http.routers.sapl.rule: "Host(`sapl.legislagd.localhost`)"
       traefik.http.routers.sapl.entrypoints: "web"
       traefik.http.services.sapl.loadbalancer.server.port: "8000"
 
