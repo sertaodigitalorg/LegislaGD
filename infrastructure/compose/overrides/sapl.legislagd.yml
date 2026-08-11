@@ -9,6 +9,19 @@ services:
       ADMIN_EMAIL: ${SAPL_ADMIN_EMAIL:-admin@legislagd.localhost}
       SITE_URL: ${SAPL_SD_URL:-http://sapl.legislagd.localhost}
       DATABASE_URL: postgresql://${SAPL_DB_USER:-sapl}:${SAPL_DB_PASSWORD:-sapl_dev_password}@legislagd-postgres:5432/${SAPL_DB_NAME:-sapl_sd}
+      LEGISLAGD_SIGI_SD_ENABLED: ${LEGISLAGD_SIGI_SD_ENABLED:-true}
+      LEGISLAGD_SIGI_SD_URL: ${LEGISLAGD_SIGI_SD_URL:-http://sigi.legislagd.localhost/protocolos}
+      LEGISLAGD_SIGI_SD_CHAT_URL: ${LEGISLAGD_SIGI_SD_CHAT_URL:-http://chat.sigi.legislagd.localhost}
+      LEGISLAGD_ECIDADE_ENABLED: ${LEGISLAGD_ECIDADE_ENABLED:-true}
+      LEGISLAGD_ECIDADE_URL: ${LEGISLAGD_ECIDADE_URL:-http://ecidade.legislagd.localhost}
+      LEGISLAGD_ECIDADE_RH_URL: ${LEGISLAGD_ECIDADE_RH_URL:-http://ecidade.legislagd.localhost/rh}
+      LEGISLAGD_ECIDADE_FOLHA_URL: ${LEGISLAGD_ECIDADE_FOLHA_URL:-http://ecidade.legislagd.localhost/folha}
+      LEGISLAGD_ECIDADE_FINANCEIRO_URL: ${LEGISLAGD_ECIDADE_FINANCEIRO_URL:-http://ecidade.legislagd.localhost/financeiro}
+      LEGISLAGD_ECIDADE_COMPRAS_URL: ${LEGISLAGD_ECIDADE_COMPRAS_URL:-http://ecidade.legislagd.localhost/compras}
+      LEGISLAGD_ECIDADE_CONTRATOS_URL: ${LEGISLAGD_ECIDADE_CONTRATOS_URL:-http://ecidade.legislagd.localhost/contratos}
+      LEGISLAGD_ECIDADE_PATRIMONIO_URL: ${LEGISLAGD_ECIDADE_PATRIMONIO_URL:-http://ecidade.legislagd.localhost/patrimonio}
+      LEGISLAGD_PORTAL_ENABLED: ${LEGISLAGD_PORTAL_ENABLED:-true}
+      LEGISLAGD_PORTAL_URL: ${LEGISLAGD_PORTAL_URL:-http://portal.legislagd.localhost}
     networks:
       - sapl-net-dev
       - legislagd

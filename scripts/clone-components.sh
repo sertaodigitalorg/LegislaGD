@@ -11,6 +11,7 @@ if [[ -f "${ROOT_DIR}/.env" ]]; then
 fi
 
 COMPONENTS_DIR="${LEGISLAGD_COMPONENTS_DIR:-modules}"
+GIT_STATUS_TIMEOUT="${LEGISLAGD_GIT_STATUS_TIMEOUT:-60}"
 if [[ "${COMPONENTS_DIR}" = /* ]]; then
   WORKSPACE_DIR="${COMPONENTS_DIR}"
 else
@@ -146,7 +147,7 @@ while IFS= read -r name; do
     echo "origin: $(git -C "${target}" remote get-url origin 2>/dev/null || echo 'nao configurado')"
     echo "upstream: $(git -C "${target}" remote get-url upstream 2>/dev/null || echo 'nao configurado')"
     echo "branch atual: $(git -C "${target}" branch --show-current 2>/dev/null || echo 'indefinida')"
-    timeout 10 git -C "${target}" status --short -uno || echo "status local ignorado por timeout"
+    timeout "${GIT_STATUS_TIMEOUT}" git -C "${target}" status --short -uno || echo "status local ignorado por timeout"
   elif [[ -e "${target}" ]]; then
     echo "caminho existe mas nao e repositorio Git: ${target}"
   else

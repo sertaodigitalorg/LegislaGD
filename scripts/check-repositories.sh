@@ -11,6 +11,7 @@ if [[ -f "${ROOT_DIR}/.env" ]]; then
 fi
 
 COMPONENTS_DIR="${LEGISLAGD_COMPONENTS_DIR:-modules}"
+GIT_STATUS_TIMEOUT="${LEGISLAGD_GIT_STATUS_TIMEOUT:-60}"
 if [[ "${COMPONENTS_DIR}" = /* ]]; then
   WORKSPACE_DIR="${COMPONENTS_DIR}"
 else
@@ -60,5 +61,5 @@ for name in "${REPOS[@]}"; do
   echo "tags recentes:"
   git -C "${target}" tag --sort=-creatordate | head -n 5 || true
   echo "alteracoes locais:"
-  timeout 10 git -C "${target}" status --short -uno | head -n 20 || echo "alteracoes locais: ignorado por timeout"
+    timeout "${GIT_STATUS_TIMEOUT}" git -C "${target}" status --short -uno | head -n 20 || echo "alteracoes locais: ignorado por timeout"
 done

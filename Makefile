@@ -6,6 +6,10 @@ endif
 PROXY_COMPOSE = docker compose -f infrastructure/compose/docker-compose.proxy.yml
 DATABASE_COMPOSE = docker compose -f infrastructure/compose/docker-compose.database.yml
 LEGISLAGD_COMPONENTS_DIR ?= modules
+LEGISLAGD_GIT_STATUS_TIMEOUT ?= 60
+COMPOSE_HTTP_TIMEOUT ?= 300
+DOCKER_CLIENT_TIMEOUT ?= 300
+export LEGISLAGD_GIT_STATUS_TIMEOUT COMPOSE_HTTP_TIMEOUT DOCKER_CLIENT_TIMEOUT
 PORTAL_COMPOSE = docker compose -p portalmodelo -f $(LEGISLAGD_COMPONENTS_DIR)/PortalModelo-SD/docker-compose.portal.yml -f infrastructure/compose/overrides/portal.legislagd.yml
 SAPL_COMPOSE = docker compose -p sapl -f $(LEGISLAGD_COMPONENTS_DIR)/SAPL-SD/docker/docker-compose-dev-db.yml -f infrastructure/compose/overrides/sapl.legislagd.yml
 SIGI_COMPOSE = docker compose -p sigi -f $(LEGISLAGD_COMPONENTS_DIR)/SIGI-SD/docker-compose.yml -f infrastructure/compose/overrides/sigi.legislagd.yml
