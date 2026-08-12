@@ -31,10 +31,12 @@ EOSQL
 create_user "$SAPL_DB_USER" "$SAPL_DB_PASSWORD"
 create_user "$SIGI_DB_USER" "$SIGI_DB_PASSWORD"
 create_user "$CHATWOOT_DB_USER" "$CHATWOOT_DB_PASSWORD"
+create_user "$KEYCLOAK_DB_USER" "$KEYCLOAK_DB_PASSWORD"
 
 create_database "$SAPL_DB_NAME" "$SAPL_DB_USER"
 create_database "$SIGI_DB_NAME" "$SIGI_DB_USER"
 create_database "$CHATWOOT_DB_NAME" "$CHATWOOT_DB_USER"
+create_database "$KEYCLOAK_DB_NAME" "$KEYCLOAK_DB_USER"
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$SIGI_DB_NAME" <<-EOSQL
 CREATE EXTENSION IF NOT EXISTS vector;

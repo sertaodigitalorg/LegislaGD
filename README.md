@@ -102,6 +102,8 @@ A execucao padrao de `make up`, sem personalizacao no `.env`, usa `LEGISLAGD_ENV
 
 A plataforma integrada usa um unico PostgreSQL central do LegislaGD. SAPL-SD, SIGI-SD e Chatwoot usam bases e usuarios separados dentro desse mesmo container.
 
+A autenticacao unificada esta sendo preparada com Keycloak self-hosted. No ambiente local, `make up` tambem sobe o Keycloak em `http://id.legislagd.localhost`, usando banco e usuario proprios dentro do PostgreSQL central.
+
 A subida principal inclui PortalModelo-SD, SAPL-SD e SIGI-SD por padrao. Cada modulo pode ser desabilitado no `.env` com `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0`. O e-Cidade-SD permanece fora desta etapa ate a integracao administrativa ser preparada.
 
 Quando um modulo ainda nao existe no workspace, o LegislaGD clona automaticamente o fork configurado no `.env` na branch definida: `dev` para desenvolvimento local, `hml` para homologacao ou `main` para base principal/producao. As URLs padrao apontam para a organizacao Sertao Digital, mas podem ser trocadas por outra fonte usando `PORTALMODELO_SD_GIT_URL`, `SAPL_SD_GIT_URL` e `SIGI_SD_GIT_URL`. Repositorios locais ja existentes sao preservados.
@@ -116,3 +118,13 @@ make down sapl
 ```
 
 Consulte `docs/implantacao/desenvolvimento-local.md` para comandos, URLs e detalhes da orquestracao.
+
+### Identidade e Single Sign-On
+
+O Keycloak e a autoridade central planejada para identidade legislativa. A implantacao e incremental: primeiro infraestrutura, depois piloto no SAPL-SD, depois Chatwoot, SIGI-SD e e-Cidade-SD.
+
+Documentos principais:
+
+- `docs/architecture/sso-analysis.md`
+- `docs/architecture/sso-implementation-plan.md`
+- `docs/implantacao/desenvolvimento-local.md`

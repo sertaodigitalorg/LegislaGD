@@ -13,11 +13,14 @@ Sem alterar o `.env`, o comportamento esperado e:
 - `LEGISLAGD_ENABLE_PORTAL=1`.
 - `LEGISLAGD_ENABLE_SAPL=1`.
 - `LEGISLAGD_ENABLE_SIGI=1`.
+- `LEGISLAGD_ENABLE_KEYCLOAK=1`.
 - `LEGISLAGD_INCLUDE_ECIDADE=0`.
 
-Assim, `make up` sobe PortalModelo-SD, SAPL-SD, SIGI-SD e o Traefik central. O e-Cidade-SD permanece desligado nesta etapa.
+Assim, `make up` sobe Keycloak, PortalModelo-SD, SAPL-SD, SIGI-SD e o Traefik central. O e-Cidade-SD permanece desligado nesta etapa.
 
 O banco da plataforma integrada tambem e centralizado: `make up` sobe um unico container PostgreSQL chamado `legislagd-postgres`, com bases e usuarios separados para cada modulo.
+
+O Keycloak usa banco e usuario proprios dentro do PostgreSQL central `legislagd-postgres`. Ele nao compartilha schema nem credenciais com SAPL-SD, SIGI-SD, Chatwoot ou e-Cidade-SD.
 
 ## Papel do LegislaGD
 
@@ -113,6 +116,7 @@ Esse comando sobe:
 - Clonagem dos forks ausentes, conforme a branch configurada.
 - PostgreSQL central do LegislaGD.
 - Traefik central do LegislaGD.
+- Keycloak usando banco e usuario proprios no PostgreSQL central, quando `LEGISLAGD_ENABLE_KEYCLOAK=1`.
 - PortalModelo-SD, quando `LEGISLAGD_ENABLE_PORTAL=1`.
 - SAPL-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_SAPL=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
@@ -194,6 +198,7 @@ Enderecos principais:
 | --- | --- |
 | LegislaGD / Traefik | `http://legislagd.localhost` |
 | Dashboard Traefik | `http://proxy.legislagd.localhost` |
+| Keycloak | `http://id.legislagd.localhost` |
 | PortalModelo-SD | `http://portal.legislagd.localhost` |
 | SAPL-SD | `http://sapl.legislagd.localhost` |
 | SIGI-SD admin | `http://sigi.legislagd.localhost` |
@@ -205,6 +210,43 @@ Enderecos principais:
 | SIGI Portainer | `http://portainer.sigi.legislagd.localhost` |
 
 Os nomes `*.localhost` normalmente resolvem para a maquina local sem editar `hosts`.
+
+## Identidade e SSO local
+
+O Keycloak local e exposto pelo Traefik em:
+
+```bash
+http://id.legislagd.localhost
+```
+
+O realm importado inicialmente e `legislagd`, com clients separados para `legislagd`, `sapl`, `sigi`, `chatwoot` e `ecidade`.
+
+Variaveis principais:
+
+```bash
+LEGISLAGD_ENABLE_KEYCLOAK=1
+KEYCLOAK_REALM=legislagd
+KEYCLOAK_HOST=id.legislagd.localhost
+KEYCLOAK_FRONTEND_URL=http://id.legislagd.localhost
+KEYCLOAK_ADMIN_USER=admin
+KEYCLOAK_ADMIN_PASSWORD=admin_dev_password
+KEYCLOAK_DB_NAME=keycloak
+KEYCLOAK_DB_USER=keycloak
+KEYCLOAK_DB_PASSWORD=keycloak_dev_password
+```
+
+Essas senhas sao padroes de desenvolvimento. Em homologacao e producao, devem ser substituidas por secrets ou variaveis fora do Git.
+
+Comandos:
+
+```bash
+make up keycloak
+make ps keycloak
+make logs keycloak
+make down keycloak
+```
+
+O Keycloak nesta etapa ainda nao autentica os sistemas. A integracao de aplicacao comeca pelo SAPL-SD na proxima fase.
 
 ## Acesso SAPL-SD
 
@@ -232,6 +274,8 @@ make logs sapl
 make logs sigi
 make logs proxy
 make config
+make ps keycloak
+make logs keycloak
 make build
 make pull
 make migrate

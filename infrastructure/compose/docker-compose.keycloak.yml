@@ -1,0 +1,46 @@
+name: legislagd
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.2
+    container_name: legislagd-keycloak
+    restart: unless-stopped
+    command:
+      - start-dev
+      - --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL_HOST: legislagd-postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: ${KEYCLOAK_DB_NAME:-keycloak}
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak_dev_password}
+      KC_HOSTNAME: ${KEYCLOAK_HOST:-id.legislagd.localhost}
+      KC_HOSTNAME_STRICT: "false"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN_USER:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD:-admin_dev_password}
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c '</dev/tcp/127.0.0.1/9000'"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    volumes:
+      - ../../config/keycloak/realms:/opt/keycloak/data/import:ro
+    networks:
+      - legislagd
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "legislagd"
+      traefik.http.routers.keycloak.rule: "Host(`${KEYCLOAK_HOST:-id.legislagd.localhost}`)"
+      traefik.http.routers.keycloak.entrypoints: "web"
+      traefik.http.services.keycloak.loadbalancer.server.port: "8080"
+
+networks:
+  legislagd:
+    external: true
+    name: legislagd

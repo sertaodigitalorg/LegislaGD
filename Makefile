@@ -5,6 +5,7 @@ endif
 
 PROXY_COMPOSE = docker compose -f infrastructure/compose/docker-compose.proxy.yml
 DATABASE_COMPOSE = docker compose -f infrastructure/compose/docker-compose.database.yml
+KEYCLOAK_COMPOSE = docker compose -f infrastructure/compose/docker-compose.keycloak.yml
 LEGISLAGD_COMPONENTS_DIR ?= modules
 LEGISLAGD_GIT_STATUS_TIMEOUT ?= 60
 COMPOSE_HTTP_TIMEOUT ?= 300
@@ -18,9 +19,13 @@ SIGI_SERVICES = redis symfony-admin sigi-worker chatwoot chatwoot-worker botpres
 LEGISLAGD_ENABLE_PORTAL ?= 1
 LEGISLAGD_ENABLE_SAPL ?= 1
 LEGISLAGD_ENABLE_SIGI ?= 1
+LEGISLAGD_ENABLE_KEYCLOAK ?= 1
 
-MODULES = all completo dev sapl portal sigi proxy database
+MODULES = all completo dev sapl portal sigi proxy database keycloak
 PLATFORM_MODULES =
+ifneq (,$(filter 1 true yes on,$(LEGISLAGD_ENABLE_KEYCLOAK)))
+PLATFORM_MODULES += keycloak
+endif
 ifneq (,$(filter 1 true yes on,$(LEGISLAGD_ENABLE_PORTAL)))
 PLATFORM_MODULES += portal
 endif
@@ -33,17 +38,17 @@ endif
 SELECTED_MODULES = $(or $(filter $(MODULES),$(MAKECMDGOALS)),all)
 
 .PHONY: help check clone bootstrap-repos validate up down stop restart ps logs config pull build migrate urls \
-	up-all up-completo up-dev up-platform up-sapl up-portal up-sigi up-proxy \
+	up-all up-completo up-dev up-platform up-sapl up-portal up-sigi up-proxy up-keycloak \
 	up-database down-database stop-database restart-database ps-database logs-database config-database pull-database \
 	migrate-all migrate-completo migrate-dev migrate-sapl migrate-sigi \
-	down-all down-completo down-dev down-platform down-sapl down-portal down-sigi down-proxy \
-	stop-all stop-completo stop-dev stop-platform stop-sapl stop-portal stop-sigi stop-proxy \
-	restart-all restart-completo restart-dev restart-sapl restart-portal restart-sigi restart-proxy \
-	ps-all ps-completo ps-dev ps-sapl ps-portal ps-sigi ps-proxy \
-	logs-all logs-completo logs-dev logs-sapl logs-portal logs-sigi logs-proxy \
-	config-all config-completo config-dev config-sapl config-portal config-sigi config-proxy \
-	pull-all pull-completo pull-dev pull-sapl pull-portal pull-sigi pull-proxy \
-	build-all build-completo build-dev build-sapl build-portal build-sigi build-proxy \
+	down-all down-completo down-dev down-platform down-sapl down-portal down-sigi down-proxy down-keycloak \
+	stop-all stop-completo stop-dev stop-platform stop-sapl stop-portal stop-sigi stop-proxy stop-keycloak \
+	restart-all restart-completo restart-dev restart-sapl restart-portal restart-sigi restart-proxy restart-keycloak \
+	ps-all ps-completo ps-dev ps-sapl ps-portal ps-sigi ps-proxy ps-keycloak \
+	logs-all logs-completo logs-dev logs-sapl logs-portal logs-sigi logs-proxy logs-keycloak \
+	config-all config-completo config-dev config-sapl config-portal config-sigi config-proxy config-keycloak \
+	pull-all pull-completo pull-dev pull-sapl pull-portal pull-sigi pull-proxy pull-keycloak \
+	build-all build-completo build-dev build-sapl build-portal build-sigi build-proxy build-keycloak \
 	$(MODULES)
 
 help:
@@ -57,6 +62,7 @@ help:
 	@echo "  make migrate         Aplica migracoes/esquemas dos modulos integrados"
 	@echo "  make urls            Mostra os enderecos locais"
 	@echo "  make ps database     Lista o Postgres central"
+	@echo "  make ps keycloak     Lista o Keycloak"
 	@echo ""
 	@echo "Padrao local:"
 	@echo "  ambiente: $${LEGISLAGD_ENV:-development}"
@@ -66,6 +72,7 @@ help:
 	@echo "  make up portal       Sobe somente PortalModelo-SD com Traefik central"
 	@echo "  make up sapl         Sobe somente SAPL-SD com Traefik central"
 	@echo "  make up sigi         Sobe somente SIGI-SD com Traefik central"
+	@echo "  make up keycloak     Sobe somente Keycloak usando o Postgres central"
 	@echo "  make down portal     Derruba somente PortalModelo-SD"
 	@echo "  make down sapl       Derruba somente SAPL-SD"
 	@echo "  make down sigi       Derruba somente SIGI-SD"
@@ -100,6 +107,9 @@ up-database:
 up-proxy:
 	$(PROXY_COMPOSE) up -d
 
+up-keycloak: up-database up-proxy
+	$(KEYCLOAK_COMPOSE) up -d
+
 up-portal build-portal: export LEGISLAGD_ENABLE_PORTAL=1
 up-portal: bootstrap-repos up-proxy
 	$(PORTAL_COMPOSE) up -d --build
@@ -132,7 +142,7 @@ down-all: down-platform
 down-completo: down-platform
 down-dev: down-platform
 
-down-platform: down-sigi down-sapl down-portal down-database down-proxy
+down-platform: down-sigi down-sapl down-portal down-keycloak down-database down-proxy
 
 down-portal:
 	$(PORTAL_COMPOSE) down
@@ -149,13 +159,16 @@ down-database:
 down-proxy:
 	$(PROXY_COMPOSE) down
 
+down-keycloak:
+	$(KEYCLOAK_COMPOSE) down
+
 stop: $(addprefix stop-,$(SELECTED_MODULES))
 
 stop-all: stop-platform
 stop-completo: stop-platform
 stop-dev: stop-platform
 
-stop-platform: stop-sigi stop-sapl stop-portal stop-database stop-proxy
+stop-platform: stop-sigi stop-sapl stop-portal stop-keycloak stop-database stop-proxy
 
 stop-portal:
 	$(PORTAL_COMPOSE) stop
@@ -172,6 +185,9 @@ stop-database:
 stop-proxy:
 	$(PROXY_COMPOSE) stop
 
+stop-keycloak:
+	$(KEYCLOAK_COMPOSE) stop
+
 restart: $(addprefix restart-,$(SELECTED_MODULES))
 
 restart-all: down-all up-all
@@ -182,10 +198,11 @@ restart-sapl: down-sapl up-sapl
 restart-sigi: down-sigi up-sigi
 restart-proxy: down-proxy up-proxy
 restart-database: down-database up-database
+restart-keycloak: down-keycloak up-keycloak
 
 ps: $(addprefix ps-,$(SELECTED_MODULES))
 
-ps-all: ps-database ps-proxy ps-portal ps-sapl ps-sigi
+ps-all: ps-database ps-proxy ps-keycloak ps-portal ps-sapl ps-sigi
 ps-completo: ps-all
 ps-dev: ps-all
 
@@ -194,6 +211,9 @@ ps-proxy:
 
 ps-database:
 	$(DATABASE_COMPOSE) ps
+
+ps-keycloak:
+	$(KEYCLOAK_COMPOSE) ps
 
 ps-portal:
 	$(PORTAL_COMPOSE) ps
@@ -213,6 +233,7 @@ logs-all:
 	@echo "  make logs sigi"
 	@echo "  make logs proxy"
 	@echo "  make logs database"
+	@echo "  make logs keycloak"
 
 logs-completo: logs-all
 logs-dev: logs-all
@@ -232,9 +253,12 @@ logs-proxy:
 logs-database:
 	$(DATABASE_COMPOSE) logs -f database
 
+logs-keycloak:
+	$(KEYCLOAK_COMPOSE) logs -f
+
 config: $(addprefix config-,$(SELECTED_MODULES))
 
-config-all: config-database config-proxy config-portal config-sapl config-sigi
+config-all: config-database config-proxy config-keycloak config-portal config-sapl config-sigi
 config-completo: config-all
 config-dev: config-all
 
@@ -243,6 +267,9 @@ config-proxy:
 
 config-database:
 	$(DATABASE_COMPOSE) config
+
+config-keycloak:
+	$(KEYCLOAK_COMPOSE) config
 
 config-portal:
 	$(PORTAL_COMPOSE) config
@@ -255,7 +282,7 @@ config-sigi:
 
 pull: $(addprefix pull-,$(SELECTED_MODULES))
 
-pull-all: pull-database pull-proxy pull-portal pull-sapl pull-sigi
+pull-all: pull-database pull-proxy pull-keycloak pull-portal pull-sapl pull-sigi
 pull-completo: pull-all
 pull-dev: pull-all
 
@@ -264,6 +291,9 @@ pull-proxy:
 
 pull-database:
 	$(DATABASE_COMPOSE) pull
+
+pull-keycloak:
+	$(KEYCLOAK_COMPOSE) pull
 
 pull-portal:
 	$(PORTAL_COMPOSE) pull
@@ -283,6 +313,9 @@ build-dev: build-all
 build-proxy:
 	@echo "Proxy usa imagem publica do Traefik; nao ha build local."
 
+build-keycloak:
+	@echo "Keycloak usa imagem publica; nao ha build local."
+
 build-portal: bootstrap-repos
 	$(PORTAL_COMPOSE) build
 
@@ -296,6 +329,7 @@ urls:
 	@echo "LegislaGD central:"
 	@echo "  http://legislagd.localhost"
 	@echo "  http://proxy.legislagd.localhost"
+	@echo "  http://id.legislagd.localhost"
 	@echo "  Postgres central: localhost:$${LEGISLAGD_POSTGRES_PORT:-5432}"
 	@echo ""
 	@echo "Modulos integrados:"

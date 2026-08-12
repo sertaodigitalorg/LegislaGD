@@ -18,6 +18,9 @@ services:
       CHATWOOT_DB_NAME: ${CHATWOOT_DB_NAME:-chatwoot_production}
       CHATWOOT_DB_USER: ${CHATWOOT_DB_USER:-chatwoot}
       CHATWOOT_DB_PASSWORD: ${CHATWOOT_DB_PASSWORD:-chatwoot_dev_password}
+      KEYCLOAK_DB_NAME: ${KEYCLOAK_DB_NAME:-keycloak}
+      KEYCLOAK_DB_USER: ${KEYCLOAK_DB_USER:-keycloak}
+      KEYCLOAK_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD:-keycloak_dev_password}
     ports:
       - "${LEGISLAGD_POSTGRES_PORT:-5432}:5432"
     volumes:

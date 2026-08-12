@@ -1,0 +1,171 @@
+{
+  "realm": "legislagd",
+  "enabled": true,
+  "displayName": "LegislaGD",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      { "name": "legislagd.admin", "description": "Administrador macro do portal LegislaGD" },
+      { "name": "legislagd.user", "description": "Usuario autenticado do portal LegislaGD" },
+      { "name": "sapl.admin", "description": "Administrador macro do SAPL-SD" },
+      { "name": "sapl.operador", "description": "Operador macro do SAPL-SD" },
+      { "name": "sapl.parlamentar", "description": "Parlamentar ou autor no SAPL-SD" },
+      { "name": "sapl.consulta", "description": "Consulta autenticada no SAPL-SD" },
+      { "name": "sigi.admin", "description": "Administrador macro do SIGI-SD" },
+      { "name": "sigi.supervisor", "description": "Supervisor macro do SIGI-SD" },
+      { "name": "sigi.atendente", "description": "Atendente macro do SIGI-SD" },
+      { "name": "chatwoot.admin", "description": "Administrador macro do Chatwoot" },
+      { "name": "chatwoot.agent", "description": "Agente macro do Chatwoot" },
+      { "name": "ecidade.admin", "description": "Administrador macro do e-Cidade-SD" },
+      { "name": "ecidade.rh", "description": "Perfil macro de recursos humanos no e-Cidade-SD" },
+      { "name": "ecidade.folha", "description": "Perfil macro de folha no e-Cidade-SD" },
+      { "name": "ecidade.compras", "description": "Perfil macro de compras no e-Cidade-SD" },
+      { "name": "ecidade.contabilidade", "description": "Perfil macro de contabilidade no e-Cidade-SD" },
+      { "name": "ecidade.patrimonio", "description": "Perfil macro de patrimonio no e-Cidade-SD" }
+    ]
+  },
+  "groups": [
+    {
+      "name": "camara",
+      "subGroups": [
+        { "name": "presidencia" },
+        { "name": "mesa-diretora" },
+        { "name": "vereadores" },
+        { "name": "secretaria-legislativa" },
+        { "name": "administracao" },
+        { "name": "rh" },
+        { "name": "contabilidade" },
+        { "name": "licitacao-compras" },
+        { "name": "ouvidoria" },
+        { "name": "atendimento-cidadao" },
+        { "name": "ti" }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "legislagd",
+      "name": "LegislaGD Portal",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": [
+        "http://legislagd.localhost/*",
+        "http://portal.legislagd.localhost/*"
+      ],
+      "webOrigins": [
+        "http://legislagd.localhost",
+        "http://portal.legislagd.localhost"
+      ]
+    },
+    {
+      "clientId": "sapl",
+      "name": "SAPL-SD",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": [
+        "http://sapl.legislagd.localhost/*"
+      ],
+      "webOrigins": [
+        "http://sapl.legislagd.localhost"
+      ]
+    },
+    {
+      "clientId": "sigi",
+      "name": "SIGI-SD",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": [
+        "http://sigi.legislagd.localhost/*"
+      ],
+      "webOrigins": [
+        "http://sigi.legislagd.localhost"
+      ]
+    },
+    {
+      "clientId": "chatwoot",
+      "name": "Chatwoot",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": [
+        "http://chat.sigi.legislagd.localhost/*"
+      ],
+      "webOrigins": [
+        "http://chat.sigi.legislagd.localhost"
+      ]
+    },
+    {
+      "clientId": "ecidade",
+      "name": "e-Cidade-SD",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": [
+        "http://ecidade.legislagd.localhost/*"
+      ],
+      "webOrigins": [
+        "http://ecidade.legislagd.localhost"
+      ]
+    }
+  ],
+  "scopeMappings": [
+    {
+      "clientScope": "roles",
+      "roles": [
+        "legislagd.user"
+      ]
+    }
+  ],
+  "defaultDefaultClientScopes": [
+    "role_list",
+    "profile",
+    "email",
+    "roles",
+    "web-origins",
+    "acr"
+  ],
+  "defaultOptionalClientScopes": [
+    "address",
+    "phone",
+    "offline_access",
+    "microprofile-jwt"
+  ]
+}
