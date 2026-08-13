@@ -22,6 +22,15 @@ services:
       LEGISLAGD_ECIDADE_PATRIMONIO_URL: ${LEGISLAGD_ECIDADE_PATRIMONIO_URL:-http://ecidade.legislagd.localhost/patrimonio}
       LEGISLAGD_PORTAL_ENABLED: ${LEGISLAGD_PORTAL_ENABLED:-true}
       LEGISLAGD_PORTAL_URL: ${LEGISLAGD_PORTAL_URL:-http://portal.legislagd.localhost}
+      SAPL_OIDC_ENABLED: ${SAPL_OIDC_ENABLED:-true}
+      SAPL_OIDC_PROVIDER_NAME: ${SAPL_OIDC_PROVIDER_NAME:-legislagd}
+      SAPL_OIDC_DISPLAY_NAME: ${SAPL_OIDC_DISPLAY_NAME:-LegislaGD}
+      SAPL_OIDC_ISSUER: ${SAPL_OIDC_ISSUER:-http://id.legislagd.localhost/realms/legislagd}
+      SAPL_OIDC_CLIENT_ID: ${SAPL_OIDC_CLIENT_ID:-sapl}
+      SAPL_OIDC_CLIENT_SECRET: ${SAPL_OIDC_CLIENT_SECRET:-}
+      SAPL_OIDC_SCOPES: ${SAPL_OIDC_SCOPES:-openid email profile}
+      SAPL_OIDC_ALLOW_EMAIL_MATCH: ${SAPL_OIDC_ALLOW_EMAIL_MATCH:-true}
+      SAPL_OIDC_CREATE_USER: ${SAPL_OIDC_CREATE_USER:-true}
     networks:
       - sapl-net-dev
       - legislagd

@@ -19,7 +19,9 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
-      - legislagd
+      legislagd:
+        aliases:
+          - id.legislagd.localhost
     labels:
       traefik.enable: "true"
       traefik.http.routers.legislagd-proxy.rule: "Host(`proxy.legislagd.localhost`) || Host(`traefik.legislagd.localhost`) || Host(`legislagd.localhost`)"

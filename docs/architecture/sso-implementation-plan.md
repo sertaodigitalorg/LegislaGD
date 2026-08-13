@@ -117,6 +117,8 @@ Adicionar login OIDC ao SAPL-SD mantendo login local.
 - Preparacao para RP-Initiated Logout.
 - Testes automatizados focados no fluxo novo.
 
+No ambiente integrado pelo LegislaGD, o override Docker habilita `SAPL_OIDC_ENABLED=true`. Quando o SAPL-SD roda isolado pelo seu compose proprio, o `.env.example` do SAPL mantem `SAPL_OIDC_ENABLED=false`, preservando o login local sem exigir Keycloak.
+
 ### Decisao tecnica recomendada
 
 Como o SAPL-SD usa `auth.User`, nao trocar `AUTH_USER_MODEL`. Criar modelo auxiliar, por exemplo:

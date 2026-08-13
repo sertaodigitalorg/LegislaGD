@@ -37,7 +37,7 @@ PLATFORM_MODULES += sigi
 endif
 SELECTED_MODULES = $(or $(filter $(MODULES),$(MAKECMDGOALS)),all)
 
-.PHONY: help check clone bootstrap-repos validate up down stop restart ps logs config pull build migrate urls \
+.PHONY: help check clone bootstrap-repos validate provision-keycloak-db up down stop restart ps logs config pull build migrate urls \
 	up-all up-completo up-dev up-platform up-sapl up-portal up-sigi up-proxy up-keycloak \
 	up-database down-database stop-database restart-database ps-database logs-database config-database pull-database \
 	migrate-all migrate-completo migrate-dev migrate-sapl migrate-sigi \
@@ -63,6 +63,7 @@ help:
 	@echo "  make urls            Mostra os enderecos locais"
 	@echo "  make ps database     Lista o Postgres central"
 	@echo "  make ps keycloak     Lista o Keycloak"
+	@echo "  make provision-keycloak-db  Cria/atualiza banco e usuario do Keycloak no Postgres central"
 	@echo ""
 	@echo "Padrao local:"
 	@echo "  ambiente: $${LEGISLAGD_ENV:-development}"
@@ -92,6 +93,9 @@ bootstrap-repos:
 validate:
 	./scripts/validate-environment.sh
 
+provision-keycloak-db: up-database
+	docker exec -i legislagd-postgres sh -s < infrastructure/database/provision-keycloak-database.sh
+
 up: $(addprefix up-,$(SELECTED_MODULES))
 
 up-all: up-platform
@@ -107,7 +111,7 @@ up-database:
 up-proxy:
 	$(PROXY_COMPOSE) up -d
 
-up-keycloak: up-database up-proxy
+up-keycloak: up-database up-proxy provision-keycloak-db
 	$(KEYCLOAK_COMPOSE) up -d
 
 up-portal build-portal: export LEGISLAGD_ENABLE_PORTAL=1

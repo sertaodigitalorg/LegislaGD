@@ -241,6 +241,7 @@ Comandos:
 
 ```bash
 make up keycloak
+make provision-keycloak-db
 make ps keycloak
 make logs keycloak
 make down keycloak
@@ -289,5 +290,7 @@ O script `scripts/test-wsl-stack.sh` deve ser executado dentro do WSL Ubuntu dep
 ## Traefik central
 
 O compose `infrastructure/compose/docker-compose.proxy.yml` cria a rede Docker `legislagd` e sobe um Traefik unico para a plataforma. Os overrides em `infrastructure/compose/overrides/` conectam os modulos a essa rede e adicionam labels de roteamento.
+
+O Traefik tambem recebe o alias Docker `id.legislagd.localhost` nessa rede. Isso permite que containers como o SAPL-SD acessem o issuer OIDC pelo mesmo host usado no navegador.
 
 Quando o LegislaGD sobe o SIGI-SD, o Traefik proprio do SIGI fica em profile `standalone` para evitar conflito na porta 80. Se for trabalhar dentro de `C:\LegislaGD\modules\SIGI-SD` sem o LegislaGD, os comandos originais do SIGI continuam disponiveis.
