@@ -221,6 +221,14 @@ http://id.legislagd.localhost
 
 O realm importado inicialmente e `legislagd`, com clients separados para `legislagd`, `sapl`, `sigi`, `chatwoot` e `ecidade`.
 
+O idioma padrao do realm local e `pt-BR`.
+
+Usuario de teste local para o piloto SAPL-SD:
+
+| Usuario | Senha | Role |
+| --- | --- | --- |
+| `sapl.operador` | `sapl_dev_password` | `sapl.operador` |
+
 Variaveis principais:
 
 ```bash

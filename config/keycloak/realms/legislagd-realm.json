@@ -8,6 +8,12 @@
   "loginWithEmailAllowed": true,
   "duplicateEmailsAllowed": false,
   "sslRequired": "external",
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "pt-BR",
+    "en"
+  ],
+  "defaultLocale": "pt-BR",
   "roles": {
     "realm": [
       { "name": "legislagd.admin", "description": "Administrador macro do portal LegislaGD" },
@@ -44,6 +50,27 @@
         { "name": "ouvidoria" },
         { "name": "atendimento-cidadao" },
         { "name": "ti" }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "sapl.operador",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Operador",
+      "lastName": "SAPL",
+      "email": "sapl.operador@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "sapl.operador"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sapl_dev_password",
+          "temporary": false
+        }
       ]
     }
   ],
