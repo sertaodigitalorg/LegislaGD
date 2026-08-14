@@ -22,12 +22,14 @@ declare -A REPOS=(
   ["SAPL-SD"]="${SAPL_SD_GIT_URL:-https://github.com/sertaodigitalorg/SAPL-SD.git}"
   ["PortalModelo-SD"]="${PORTALMODELO_SD_GIT_URL:-https://github.com/sertaodigitalorg/PortalModelo-SD.git}"
   ["SIGI-SD"]="${SIGI_SD_GIT_URL:-https://github.com/sertaodigitalorg/SIGI-SD.git}"
+  ["Chatwoot-SD"]="${CHATWOOT_SD_GIT_URL:-https://github.com/sertaodigitalorg/Chatwoot-SD.git}"
   ["e-Cidade-SD"]="${ECIDADE_SD_GIT_URL:-https://github.com/sertaodigitalorg/e-Cidade-SD.git}"
 )
 
 declare -A UPSTREAMS=(
   ["SAPL-SD"]="https://github.com/interlegis/sapl.git"
   ["PortalModelo-SD"]="https://github.com/interlegis/portalmodelo.git"
+  ["Chatwoot-SD"]="https://github.com/chatwoot/chatwoot.git"
   ["e-Cidade-SD"]="https://github.com/DBSeller/e-cidade.git"
 )
 
@@ -64,11 +66,27 @@ component_branch() {
     SIGI-SD)
       echo "${SIGI_SD_BRANCH:-${default_branch}}"
       ;;
+    Chatwoot-SD)
+      echo "${CHATWOOT_SD_BRANCH:-${default_branch}}"
+      ;;
     e-Cidade-SD)
       echo "${ECIDADE_SD_BRANCH:-${default_branch}}"
       ;;
     *)
       echo "${default_branch}"
+      ;;
+  esac
+}
+
+component_target() {
+  local name="$1"
+
+  case "${name}" in
+    Chatwoot-SD)
+      echo "${WORKSPACE_DIR}/SIGI-SD/apps/chatwoot-sd"
+      ;;
+    *)
+      echo "${WORKSPACE_DIR}/${name}"
       ;;
   esac
 }
@@ -89,6 +107,7 @@ selected_components() {
 
   if [[ "${include_sigi}" == "1" || "${include_sigi}" == "true" || "${include_sigi}" == "yes" || "${include_sigi}" == "on" ]]; then
     echo "SIGI-SD"
+    echo "Chatwoot-SD"
   fi
 
   if [[ "${include_ecidade}" == "1" || "${include_ecidade}" == "true" || "${include_ecidade}" == "yes" || "${include_ecidade}" == "on" ]]; then
@@ -123,12 +142,13 @@ echo "Branch padrao dos componentes: ${LEGISLAGD_COMPONENT_BRANCH:-$(branch_from
 echo "PortalModelo-SD habilitado: ${LEGISLAGD_ENABLE_PORTAL:-1}"
 echo "SAPL-SD habilitado: ${LEGISLAGD_ENABLE_SAPL:-1}"
 echo "SIGI-SD habilitado: ${LEGISLAGD_ENABLE_SIGI:-1}"
+echo "Chatwoot-SD acompanha SIGI-SD quando SIGI esta habilitado"
 echo "e-Cidade-SD incluido: ${LEGISLAGD_INCLUDE_ECIDADE:-0}"
 
 mkdir -p "${WORKSPACE_DIR}"
 
 while IFS= read -r name; do
-  target="${WORKSPACE_DIR}/${name}"
+  target="$(component_target "${name}")"
   origin="${REPOS[$name]}"
   branch="$(component_branch "${name}")"
 

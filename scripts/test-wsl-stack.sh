@@ -22,3 +22,4 @@ echo "--- branches ---"
 git -C /mnt/c/LegislaGD/modules/PortalModelo-SD branch --show-current
 git -C /mnt/c/LegislaGD/modules/SAPL-SD branch --show-current
 git -C /mnt/c/LegislaGD/modules/SIGI-SD branch --show-current
+git -C /mnt/c/LegislaGD/modules/SIGI-SD/apps/chatwoot-sd branch --show-current

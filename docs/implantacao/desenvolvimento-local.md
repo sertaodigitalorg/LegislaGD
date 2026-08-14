@@ -40,6 +40,7 @@ O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a
   - `C:\LegislaGD\modules\PortalModelo-SD`
   - `C:\LegislaGD\modules\SAPL-SD`
   - `C:\LegislaGD\modules\SIGI-SD`
+  - `C:\LegislaGD\modules\SIGI-SD\apps\chatwoot-sd`
 
 Se algum desses reposititorios ainda nao existir, `make up` chama `scripts/clone-components.sh` antes do Docker Compose. Por padrao, o clone usa os forks oficiais da Sertao Digital:
 
@@ -48,6 +49,7 @@ Se algum desses reposititorios ainda nao existir, `make up` chama `scripts/clone
 | PortalModelo-SD | `https://github.com/sertaodigitalorg/PortalModelo-SD.git` | `https://github.com/interlegis/portalmodelo.git` |
 | SAPL-SD | `https://github.com/sertaodigitalorg/SAPL-SD.git` | `https://github.com/interlegis/sapl.git` |
 | SIGI-SD | `https://github.com/sertaodigitalorg/SIGI-SD.git` | mantido pelo Sertao Digital |
+| Chatwoot-SD | `https://github.com/sertaodigitalorg/Chatwoot-SD.git` | `https://github.com/chatwoot/chatwoot.git` |
 | e-Cidade-SD | `https://github.com/sertaodigitalorg/e-Cidade-SD.git` | `https://github.com/DBSeller/e-cidade.git` |
 
 O script nao troca branch, nao executa reset e nao sobrescreve historico de repositorios que ja existem localmente.
@@ -67,6 +69,7 @@ As URLs podem ser substituidas no `.env` quando for necessario usar outra fonte:
 PORTALMODELO_SD_GIT_URL=https://github.com/sertaodigitalorg/PortalModelo-SD.git
 SAPL_SD_GIT_URL=https://github.com/sertaodigitalorg/SAPL-SD.git
 SIGI_SD_GIT_URL=https://github.com/sertaodigitalorg/SIGI-SD.git
+CHATWOOT_SD_GIT_URL=https://github.com/sertaodigitalorg/Chatwoot-SD.git
 ECIDADE_SD_GIT_URL=https://github.com/sertaodigitalorg/e-Cidade-SD.git
 ```
 
@@ -97,7 +100,13 @@ Tambem e possivel fixar uma branch por modulo:
 SAPL_SD_BRANCH=dev
 PORTALMODELO_SD_BRANCH=hml
 SIGI_SD_BRANCH=main
+CHATWOOT_SD_BRANCH=dev
 ```
+
+O `Chatwoot-SD` usa as branches padrao do ecossistema (`dev`, `hml`, `main`) e
+acompanha o upstream Chatwoot a partir da branch `develop`. Ele e clonado dentro
+do SIGI-SD, em `apps/chatwoot-sd`, porque o Chatwoot e parte da plataforma de
+atendimento/CiRM do SIGI.
 
 Use `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0` para retirar um modulo da subida principal. Os comandos individuais continuam disponiveis, por exemplo `make up sapl`.
 
@@ -120,6 +129,7 @@ Esse comando sobe:
 - PortalModelo-SD, quando `LEGISLAGD_ENABLE_PORTAL=1`.
 - SAPL-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_SAPL=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
+- Chatwoot-SD como fonte de build do Chatwoot, quando `LEGISLAGD_ENABLE_SIGI=1`.
 - Migracoes do SAPL-SD e sincronizacao de schema do SIGI-SD no PostgreSQL central.
 
 Com o `.env.example` ou sem `.env`, esses tres modulos ficam habilitados e a branch padrao e `dev`. O e-Cidade-SD nao sobe nesta etapa.

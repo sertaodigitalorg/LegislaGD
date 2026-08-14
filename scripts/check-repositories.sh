@@ -30,6 +30,7 @@ fi
 
 if [[ "${LEGISLAGD_ENABLE_SIGI:-1}" == "1" || "${LEGISLAGD_ENABLE_SIGI:-1}" == "true" || "${LEGISLAGD_ENABLE_SIGI:-1}" == "yes" || "${LEGISLAGD_ENABLE_SIGI:-1}" == "on" ]]; then
   REPOS+=("SIGI-SD")
+  REPOS+=("Chatwoot-SD")
 fi
 
 if [[ "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "1" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "true" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "yes" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "on" ]]; then
@@ -39,6 +40,8 @@ fi
 for name in "${REPOS[@]}"; do
   if [[ "${name}" == "LegislaGD" ]]; then
     target="${ROOT_DIR}"
+  elif [[ "${name}" == "Chatwoot-SD" ]]; then
+    target="${WORKSPACE_DIR}/SIGI-SD/apps/chatwoot-sd"
   else
     target="${WORKSPACE_DIR}/${name}"
   fi

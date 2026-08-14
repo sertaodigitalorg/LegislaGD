@@ -177,18 +177,18 @@ O mapeamento exato deve respeitar grupos reais existentes na instancia.
 
 ### Escopo
 
-Validar SSO no Chatwoot sem dependencia Enterprise ou SaaS obrigatorio.
+Validar SSO no Chatwoot Community usando o fork `Chatwoot-SD`, sem dependencia
+Enterprise ou SaaS obrigatorio.
 
 ### Entregas
 
 - Fixar versao da imagem Chatwoot.
 - Criar `docs/architecture/chatwoot-sso.md`.
-- Confirmar se a edicao usada suporta SSO/OIDC nativamente.
-- Se nao suportar, definir estrategia self-hosted:
-  - fork controlado;
-  - proxy/adaptador;
-  - ou integracao customizada minima.
+- Usar `sertaodigitalorg/Chatwoot-SD` como fork controlado.
+- Ajustar orquestracao local para construir Chatwoot a partir do fork.
 - Criar client Keycloak `chatwoot`.
+- Implementar login OIDC no fork reaproveitando os padroes internos existentes.
+- Exibir botao `Entrar com LegislaGD` na tela de login.
 - Validar login com agente de teste.
 
 ### Criterios de aceite

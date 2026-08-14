@@ -17,6 +17,7 @@ Esta estrategia preserva os projetos originais, seus creditos, licencas e histor
 | --- | --- | --- |
 | SAPL-SD | https://github.com/sertaodigitalorg/SAPL-SD.git | https://github.com/interlegis/sapl.git |
 | PortalModelo-SD | https://github.com/sertaodigitalorg/PortalModelo-SD.git | https://github.com/interlegis/portalmodelo.git |
+| Chatwoot-SD | https://github.com/sertaodigitalorg/Chatwoot-SD.git | https://github.com/chatwoot/chatwoot.git |
 | e-Cidade-SD | https://github.com/sertaodigitalorg/e-Cidade-SD.git | https://github.com/DBSeller/e-cidade.git |
 
 ## e-Cidade-SD
@@ -50,6 +51,17 @@ develop
         v
 main
 ```
+
+## Chatwoot-SD
+
+Chatwoot-SD e o fork controlado do Chatwoot Community para integracoes do
+LegislaGD/SIGI-SD, inicialmente SSO com Keycloak/OIDC e melhorias de IA.
+
+O fork deve acompanhar o upstream `chatwoot/chatwoot`, mantendo patches pequenos
+e removendo customizacoes quando a Community Edition oferecer recurso
+equivalente.
+
+As branches oficiais do fork seguem o padrao LegislaGD: `dev`, `hml` e `main`.
 
 ## Forks ainda nao confirmados
 

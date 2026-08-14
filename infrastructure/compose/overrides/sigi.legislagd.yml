@@ -29,6 +29,10 @@ services:
       - legislagd
 
   chatwoot:
+    image: ${CHATWOOT_SD_IMAGE:-legislagd/chatwoot-sd:dev}
+    build:
+      context: ./apps/chatwoot-sd
+      dockerfile: docker/Dockerfile
     environment:
       POSTGRES_HOST: legislagd-postgres
       POSTGRES_DATABASE: ${CHATWOOT_DB_NAME:-chatwoot_production}
@@ -47,6 +51,10 @@ services:
       - traefik.http.services.chatwoot.loadbalancer.server.port=3000
 
   chatwoot-worker:
+    image: ${CHATWOOT_SD_IMAGE:-legislagd/chatwoot-sd:dev}
+    build:
+      context: ./apps/chatwoot-sd
+      dockerfile: docker/Dockerfile
     environment:
       POSTGRES_HOST: legislagd-postgres
       POSTGRES_DATABASE: ${CHATWOOT_DB_NAME:-chatwoot_production}

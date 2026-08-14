@@ -49,6 +49,17 @@ Este inventario registra informacoes confirmadas por consulta Git publica, inspe
 - Origem upstream: nao aplicavel nesta etapa
 - Situacao: sistema mantido pelas equipes do Sertao Digital; nao alterado nesta etapa
 
+## Chatwoot-SD
+
+- Repositorio oficial: https://github.com/sertaodigitalorg/Chatwoot-SD.git
+- Fonte upstream: https://github.com/chatwoot/chatwoot.git
+- Branches padrao: `dev`, `hml`, `main`
+- Branch upstream acompanhada: `develop`
+- Situacao: fork criado para evoluir Chatwoot Community com SSO LegislaGD/OIDC,
+  melhorias de IA e integracoes do SIGI-SD.
+- Observacao: manter o fork proximo do upstream e reutilizar recursos da
+  Community Edition quando forem disponibilizados.
+
 ## Pendencias de inspecao profunda
 
 - Inspecionar licencas, frameworks, bancos, Docker, pipelines, testes e dependencias nos diretorios baixados.
