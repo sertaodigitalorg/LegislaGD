@@ -221,7 +221,9 @@ http://id.legislagd.localhost
 
 O realm importado inicialmente e `legislagd`, com clients separados para `legislagd`, `sapl`, `sigi`, `chatwoot` e `ecidade`.
 
-O idioma padrao do realm local e `pt-BR`.
+O idioma padrao do realm local e `pt-BR`. O SAPL-SD tambem envia
+`ui_locales=pt-BR` na chamada OIDC para solicitar a tela de login do Keycloak
+em portugues.
 
 Usuario de teste local para o piloto SAPL-SD:
 
@@ -250,12 +252,17 @@ Comandos:
 ```bash
 make up keycloak
 make provision-keycloak-db
+make provision-keycloak-dev-users
 make ps keycloak
 make logs keycloak
 make down keycloak
 ```
 
-O Keycloak nesta etapa ainda nao autentica os sistemas. A integracao de aplicacao comeca pelo SAPL-SD na proxima fase.
+Se o realm `legislagd` ja existia antes da inclusao do usuario local de teste
+ou antes da configuracao final do client SAPL, execute
+`make provision-keycloak-dev-users` para criar/atualizar o usuario
+`sapl.operador` e garantir o client `sapl` como publico com PKCE, sem apagar o
+banco do Keycloak.
 
 ## Acesso SAPL-SD
 
