@@ -1,0 +1,31 @@
+schema_version: 1
+
+project:
+  name: LegislaGD
+  repository: https://github.com/sertaodigitalorg/LegislaGD
+
+knowledge:
+  repository: https://github.com/sertaodigitalorg/SD-Knowledge
+  branch: main
+
+skills:
+  required:
+    - sertaodigital-core
+    - legislagd
+
+governance:
+  source_of_truth: docs/SOURCE_OF_TRUTH.md
+  technical_decision_gate: docs/TECHNICAL_DECISION_GOVERNANCE.md
+  prompt_handoff: docs/PROMPT_HANDOFF_STANDARD.md
+
+workspace:
+  mode: multi-root
+  expected_roots:
+    - LegislaGD
+    - SD-Knowledge
+
+rules:
+  duplicate_skills: false
+  git_submodule: false
+  sdka_runtime_dependency: false
+  cross_layer_impact_check: true
