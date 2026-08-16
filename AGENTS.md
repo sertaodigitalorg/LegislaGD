@@ -13,6 +13,24 @@ Ao trabalhar neste repositório, o agente deve:
 5. ler este `AGENTS.md`, a documentação e os ADRs locais;
 6. analisar as integrações e o código atual antes de decidir ou alterar.
 
+### Descoberta do SD-Knowledge
+
+Use `.sdka.yaml` como fonte para localizar o repositório de conhecimento. Procure
+primeiro um root `SD-Knowledge` no workspace e, em seguida, um diretório irmão do
+`LegislaGD`. Quando o diretório existir, valide se o remote `origin` corresponde
+ao repositório declarado em `.sdka.yaml` antes de carregar suas instruções.
+
+Se o `SD-Knowledge` não for localizado, solicite autorização para executar:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-sdka.ps1 -CloneIfMissing
+```
+
+Sem `-CloneIfMissing`, o script faz somente descoberta e validação. Nunca clone o
+`SD-Knowledge` dentro do `LegislaGD`, não o converta em submodule e não o torne
+dependência de runtime. Se o projeto atual não puder ser identificado como
+LegislaGD, não presuma o vínculo nem faça clone automático.
+
 A governança transversal e as Skills são mantidas em
 <https://github.com/sertaodigitalorg/SD-Knowledge>. Use referências; não copie
 as políticas ou Skills para este repositório.
