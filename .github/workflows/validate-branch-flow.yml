@@ -1,0 +1,54 @@
+name: Validate Branch Flow
+
+on:
+  pull_request:
+    branches:
+      - hml
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-branch-flow:
+    name: Validate Branch Flow
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Validate source branch
+        shell: bash
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+          BASE_REPOSITORY: ${{ github.repository }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          set -euo pipefail
+
+          echo "Source:      ${HEAD_REPOSITORY}:${HEAD_BRANCH}"
+          echo "Destination: ${BASE_REPOSITORY}:${BASE_BRANCH}"
+
+          case "${BASE_BRANCH}" in
+            hml)
+              EXPECTED_HEAD="dev"
+              ;;
+            main)
+              EXPECTED_HEAD="hml"
+              ;;
+            *)
+              echo "::error::Unsupported destination branch '${BASE_BRANCH}'."
+              exit 1
+              ;;
+          esac
+
+          if [[ "${HEAD_REPOSITORY}" != "${BASE_REPOSITORY}" ]]; then
+            echo "::error::Promotion Pull Requests must originate in '${BASE_REPOSITORY}', not '${HEAD_REPOSITORY}'."
+            exit 1
+          fi
+
+          if [[ "${HEAD_BRANCH}" != "${EXPECTED_HEAD}" ]]; then
+            echo "::error::Pull Requests to '${BASE_BRANCH}' must originate from '${EXPECTED_HEAD}', not '${HEAD_BRANCH}'."
+            exit 1
+          fi
+
+          echo "Branch promotion flow is valid: ${HEAD_BRANCH} -> ${BASE_BRANCH}."
