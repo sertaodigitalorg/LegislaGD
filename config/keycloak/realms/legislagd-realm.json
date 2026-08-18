@@ -72,6 +72,18 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "chatwoot.agent",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Agente",
+      "lastName": "Chatwoot",
+      "email": "john@acme.inc",
+      "realmRoles": [
+        "legislagd.user",
+        "chatwoot.agent"
+      ]
     }
   ],
   "clients": [

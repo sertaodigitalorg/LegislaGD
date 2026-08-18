@@ -241,6 +241,18 @@ Usuario de teste local para o piloto SAPL-SD:
 | --- | --- | --- |
 | `sapl.operador` | `sapl_dev_password` | `sapl.operador` |
 
+Usuario de teste local para o piloto Chatwoot-SD:
+
+| Usuario | Senha | E-mail | Role |
+| --- | --- | --- | --- |
+| `chatwoot.agent` | definida em `CHATWOOT_SSO_PASSWORD` | `john@acme.inc` | `chatwoot.agent` |
+
+O e-mail padrao `john@acme.inc` acompanha o seed local do Chatwoot. Se a base
+local nao tiver esse usuario, configure `CHATWOOT_OIDC_ACCOUNT_ID` para permitir
+criacao Just-In-Time em uma conta especifica ou ajuste `CHATWOOT_SSO_EMAIL` para
+um usuario Chatwoot ja existente. Defina tambem `CHATWOOT_OIDC_CLIENT_SECRET`
+e `CHATWOOT_SSO_PASSWORD` no ambiente local antes de provisionar o Keycloak.
+
 Variaveis principais:
 
 ```bash
@@ -253,6 +265,11 @@ KEYCLOAK_ADMIN_PASSWORD=admin_dev_password
 KEYCLOAK_DB_NAME=keycloak
 KEYCLOAK_DB_USER=keycloak
 KEYCLOAK_DB_PASSWORD=keycloak_dev_password
+CHATWOOT_OIDC_ENABLED=true
+CHATWOOT_OIDC_CLIENT_ID=chatwoot
+CHATWOOT_OIDC_CLIENT_SECRET=
+CHATWOOT_OIDC_ISSUER=http://id.legislagd.localhost/realms/legislagd
+CHATWOOT_SSO_PASSWORD=
 ```
 
 Essas senhas sao padroes de desenvolvimento. Em homologacao e producao, devem ser substituidas por secrets ou variaveis fora do Git.
