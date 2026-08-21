@@ -43,6 +43,38 @@ user_internal_id() {
     --noquotes | awk -F, -v username="$username" '$2 == username { print $1; exit }'
 }
 
+client_scope_id() {
+  scope_name="$1"
+  kc get client-scopes \
+    -r "$KEYCLOAK_REALM" \
+    -q "name=$scope_name" \
+    --fields id,name \
+    --format csv \
+    --noquotes | awk -F, -v scope_name="$scope_name" '$2 == scope_name { print $1; exit }'
+}
+
+ensure_default_client_scope() {
+  internal_client_id="$1"
+  scope_name="$2"
+  scope_id="$(client_scope_id "$scope_name")"
+
+  if [ -z "$scope_id" ]; then
+    echo "Client scope $scope_name nao encontrado no realm $KEYCLOAK_REALM." >&2
+    exit 1
+  fi
+
+  if kc get "clients/$internal_client_id/default-client-scopes" \
+    -r "$KEYCLOAK_REALM" \
+    --fields name \
+    --format csv \
+    --noquotes | awk -F, -v scope_name="$scope_name" '$1 == scope_name { found = 1 } END { exit !found }'; then
+    return
+  fi
+
+  kc update "clients/$internal_client_id/default-client-scopes/$scope_id" \
+    -r "$KEYCLOAK_REALM" >/dev/null
+}
+
 echo "Autenticando no Keycloak local..."
 kc config credentials \
   --server http://localhost:8080 \
@@ -138,6 +170,9 @@ else
     -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
 fi
 
+echo "Garantindo client scope roles no client $CHATWOOT_OIDC_CLIENT_ID..."
+ensure_default_client_scope "$CHATWOOT_CLIENT_ID" roles
+
 USER_ID="$(user_internal_id "$SAPL_SSO_USER")"
 
 if [ -z "$USER_ID" ]; then
@@ -175,7 +210,7 @@ kc set-password \
   --new-password "$SAPL_SSO_PASSWORD" >/dev/null
 
 echo "Garantindo roles do SAPL..."
-for role in legislagd.user sapl.operador; do
+for role in legislagd.user sapl.operador chatwoot.agent; do
   if ! kc get "roles/$role" -r "$KEYCLOAK_REALM" >/dev/null 2>&1; then
     kc create roles -r "$KEYCLOAK_REALM" -s "name=$role" >/dev/null
   fi
