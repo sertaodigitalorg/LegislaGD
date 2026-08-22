@@ -13,7 +13,7 @@ SAPL_OIDC_CLIENT_ID="${SAPL_OIDC_CLIENT_ID:-sapl}"
 SAPL_SD_URL="${SAPL_SD_URL:-http://sapl.legislagd.localhost}"
 
 SIGI_OIDC_CLIENT_ID="${SIGI_OIDC_CLIENT_ID:-sigi}"
-LEGISLAGD_SIGI_SD_URL="${LEGISLAGD_SIGI_SD_URL:-http://sigi.legislagd.localhost}"
+SIGI_SD_URL="${SIGI_SD_URL:-http://sigi.legislagd.localhost}"
 SIGI_ADMIN_USER="${SIGI_ADMIN_USER:-sigi.admin}"
 SIGI_ADMIN_PASSWORD="${SIGI_ADMIN_PASSWORD:-sigi_dev_password}"
 SIGI_ADMIN_EMAIL="${SIGI_ADMIN_EMAIL:-sigi.admin@legislagd.localhost}"
@@ -206,8 +206,8 @@ if [ -z "$SIGI_CLIENT_ID" ]; then
     -s standardFlowEnabled=true \
     -s directAccessGrantsEnabled=false \
     -s serviceAccountsEnabled=false \
-    -s "redirectUris=[\"$LEGISLAGD_SIGI_SD_URL/*\"]" \
-    -s "webOrigins=[\"$LEGISLAGD_SIGI_SD_URL\"]" \
+    -s "redirectUris=[\"$SIGI_SD_URL/*\"]" \
+    -s "webOrigins=[\"$SIGI_SD_URL\"]" \
     -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
 
   SIGI_CLIENT_ID="$(client_internal_id "$SIGI_OIDC_CLIENT_ID")"
@@ -222,8 +222,8 @@ else
     -s standardFlowEnabled=true \
     -s directAccessGrantsEnabled=false \
     -s serviceAccountsEnabled=false \
-    -s "redirectUris=[\"$LEGISLAGD_SIGI_SD_URL/*\"]" \
-    -s "webOrigins=[\"$LEGISLAGD_SIGI_SD_URL\"]" \
+    -s "redirectUris=[\"$SIGI_SD_URL/*\"]" \
+    -s "webOrigins=[\"$SIGI_SD_URL\"]" \
     -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
 fi
 
