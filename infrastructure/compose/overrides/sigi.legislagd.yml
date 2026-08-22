@@ -6,6 +6,11 @@ services:
   symfony-admin:
     environment:
       DATABASE_URL: postgresql://${SIGI_DB_USER:-sigi}:${SIGI_DB_PASSWORD:-sigi_dev_password}@legislagd-postgres:5432/${SIGI_DB_NAME:-sigi_sd}?serverVersion=16&charset=utf8
+      SIGI_OIDC_ENABLED: ${SIGI_OIDC_ENABLED:-true}
+      SIGI_OIDC_DISPLAY_NAME: ${SIGI_OIDC_DISPLAY_NAME:-LegislaGD}
+      SIGI_OIDC_ISSUER: ${SIGI_OIDC_ISSUER:-http://id.legislagd.localhost/realms/legislagd}
+      SIGI_OIDC_CLIENT_ID: ${SIGI_OIDC_CLIENT_ID:-sigi}
+      SIGI_OIDC_SCOPES: ${SIGI_OIDC_SCOPES:-openid email profile}
     depends_on:
       - redis
     networks:
