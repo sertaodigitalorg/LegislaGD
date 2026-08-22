@@ -9,7 +9,9 @@ services:
       SIGI_OIDC_ENABLED: ${SIGI_OIDC_ENABLED:-true}
       SIGI_OIDC_DISPLAY_NAME: ${SIGI_OIDC_DISPLAY_NAME:-LegislaGD}
       SIGI_OIDC_ISSUER: ${SIGI_OIDC_ISSUER:-http://id.legislagd.localhost/realms/legislagd}
+      SIGI_OIDC_WELL_KNOWN_URL: ${SIGI_OIDC_WELL_KNOWN_URL:-http://id.legislagd.localhost/realms/legislagd/.well-known/openid-configuration}
       SIGI_OIDC_CLIENT_ID: ${SIGI_OIDC_CLIENT_ID:-sigi}
+      SIGI_OIDC_CLIENT_SECRET: ${SIGI_OIDC_CLIENT_SECRET:-}
       SIGI_OIDC_SCOPES: ${SIGI_OIDC_SCOPES:-openid email profile}
     depends_on:
       - redis
