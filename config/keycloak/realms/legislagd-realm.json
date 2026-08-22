@@ -84,6 +84,25 @@
         "legislagd.user",
         "chatwoot.agent"
       ]
+    },
+    {
+      "username": "sigi.admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Administrador",
+      "lastName": "SIGI",
+      "email": "sigi.admin@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "sigi.admin"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sigi_dev_password",
+          "temporary": false
+        }
+      ]
     }
   ],
   "clients": [
@@ -132,7 +151,8 @@
       "name": "SIGI-SD",
       "enabled": true,
       "protocol": "openid-connect",
-      "publicClient": false,
+      "publicClient": true,
+      "clientAuthenticatorType": "none",
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,

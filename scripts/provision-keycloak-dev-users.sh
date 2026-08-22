@@ -12,6 +12,15 @@ SAPL_SSO_EMAIL="${SAPL_SSO_EMAIL:-sapl.operador@legislagd.localhost}"
 SAPL_OIDC_CLIENT_ID="${SAPL_OIDC_CLIENT_ID:-sapl}"
 SAPL_SD_URL="${SAPL_SD_URL:-http://sapl.legislagd.localhost}"
 
+SIGI_OIDC_CLIENT_ID="${SIGI_OIDC_CLIENT_ID:-sigi}"
+LEGISLAGD_SIGI_SD_URL="${LEGISLAGD_SIGI_SD_URL:-http://sigi.legislagd.localhost}"
+SIGI_ADMIN_USER="${SIGI_ADMIN_USER:-sigi.admin}"
+SIGI_ADMIN_PASSWORD="${SIGI_ADMIN_PASSWORD:-sigi_dev_password}"
+SIGI_ADMIN_EMAIL="${SIGI_ADMIN_EMAIL:-sigi.admin@legislagd.localhost}"
+SIGI_ATENDENTE_USER="${SIGI_ATENDENTE_USER:-sigi.atendente}"
+SIGI_ATENDENTE_PASSWORD="${SIGI_ATENDENTE_PASSWORD:-sigi_dev_password}"
+SIGI_ATENDENTE_EMAIL="${SIGI_ATENDENTE_EMAIL:-sigi.atendente@legislagd.localhost}"
+
 CHATWOOT_SSO_USER="${CHATWOOT_SSO_USER:-chatwoot.agent}"
 CHATWOOT_SSO_PASSWORD="${CHATWOOT_SSO_PASSWORD:-}"
 CHATWOOT_SSO_EMAIL="${CHATWOOT_SSO_EMAIL:-john@acme.inc}"
@@ -75,6 +84,64 @@ ensure_default_client_scope() {
     -r "$KEYCLOAK_REALM" >/dev/null
 }
 
+ensure_realm_user() {
+  username="$1"
+  password="$2"
+  email="$3"
+  first_name="$4"
+  last_name="$5"
+  shift 5
+
+  internal_user_id="$(user_internal_id "$username")"
+
+  if [ -z "$internal_user_id" ]; then
+    echo "Criando usuario $username..."
+    kc create users \
+      -r "$KEYCLOAK_REALM" \
+      -s "username=$username" \
+      -s enabled=true \
+      -s emailVerified=true \
+      -s "firstName=$first_name" \
+      -s "lastName=$last_name" \
+      -s "email=$email" >/dev/null
+
+    internal_user_id="$(user_internal_id "$username")"
+  else
+    echo "Atualizando usuario $username..."
+    kc update "users/$internal_user_id" \
+      -r "$KEYCLOAK_REALM" \
+      -s enabled=true \
+      -s emailVerified=true \
+      -s "firstName=$first_name" \
+      -s "lastName=$last_name" \
+      -s "email=$email" >/dev/null
+  fi
+
+  if [ -z "$internal_user_id" ]; then
+    echo "Nao foi possivel localizar/criar o usuario $username." >&2
+    exit 1
+  fi
+
+  echo "Definindo senha do usuario $username..."
+  kc set-password \
+    -r "$KEYCLOAK_REALM" \
+    --username "$username" \
+    --new-password "$password" >/dev/null
+
+  for role in "$@"; do
+    if ! kc get "roles/$role" -r "$KEYCLOAK_REALM" >/dev/null 2>&1; then
+      kc create roles -r "$KEYCLOAK_REALM" -s "name=$role" >/dev/null
+    fi
+
+    kc add-roles \
+      -r "$KEYCLOAK_REALM" \
+      --uusername "$username" \
+      --rolename "$role" >/dev/null 2>&1 || true
+  done
+
+  echo "Usuario SSO pronto: $username"
+}
+
 echo "Autenticando no Keycloak local..."
 kc config credentials \
   --server http://localhost:8080 \
@@ -87,16 +154,6 @@ kc update "realms/$KEYCLOAK_REALM" \
   -s internationalizationEnabled=true \
   -s defaultLocale=pt-BR \
   -s 'supportedLocales=["pt-BR","en"]' >/dev/null
-
-if [ -z "$CHATWOOT_OIDC_CLIENT_SECRET" ]; then
-  echo "CHATWOOT_OIDC_CLIENT_SECRET deve ser definido no ambiente local." >&2
-  exit 1
-fi
-
-if [ -z "$CHATWOOT_SSO_PASSWORD" ]; then
-  echo "CHATWOOT_SSO_PASSWORD deve ser definido no ambiente local." >&2
-  exit 1
-fi
 
 CLIENT_ID="$(client_internal_id "$SAPL_OIDC_CLIENT_ID")"
 
@@ -132,6 +189,56 @@ else
     -s "redirectUris=[\"$SAPL_SD_URL/*\"]" \
     -s "webOrigins=[\"$SAPL_SD_URL\"]" \
     -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
+fi
+
+SIGI_CLIENT_ID="$(client_internal_id "$SIGI_OIDC_CLIENT_ID")"
+
+if [ -z "$SIGI_CLIENT_ID" ]; then
+  echo "Criando client OIDC $SIGI_OIDC_CLIENT_ID..."
+  kc create clients \
+    -r "$KEYCLOAK_REALM" \
+    -s "clientId=$SIGI_OIDC_CLIENT_ID" \
+    -s name=SIGI-SD \
+    -s enabled=true \
+    -s protocol=openid-connect \
+    -s publicClient=true \
+    -s clientAuthenticatorType=none \
+    -s standardFlowEnabled=true \
+    -s directAccessGrantsEnabled=false \
+    -s serviceAccountsEnabled=false \
+    -s "redirectUris=[\"$LEGISLAGD_SIGI_SD_URL/*\"]" \
+    -s "webOrigins=[\"$LEGISLAGD_SIGI_SD_URL\"]" \
+    -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
+
+  SIGI_CLIENT_ID="$(client_internal_id "$SIGI_OIDC_CLIENT_ID")"
+else
+  echo "Atualizando client OIDC $SIGI_OIDC_CLIENT_ID como publico com PKCE..."
+  kc update "clients/$SIGI_CLIENT_ID" \
+    -r "$KEYCLOAK_REALM" \
+    -s enabled=true \
+    -s protocol=openid-connect \
+    -s publicClient=true \
+    -s clientAuthenticatorType=none \
+    -s standardFlowEnabled=true \
+    -s directAccessGrantsEnabled=false \
+    -s serviceAccountsEnabled=false \
+    -s "redirectUris=[\"$LEGISLAGD_SIGI_SD_URL/*\"]" \
+    -s "webOrigins=[\"$LEGISLAGD_SIGI_SD_URL\"]" \
+    -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
+fi
+
+echo "Garantindo usuarios do SIGI..."
+ensure_realm_user "$SIGI_ADMIN_USER" "$SIGI_ADMIN_PASSWORD" "$SIGI_ADMIN_EMAIL" Administrador SIGI legislagd.user sigi.admin
+ensure_realm_user "$SIGI_ATENDENTE_USER" "$SIGI_ATENDENTE_PASSWORD" "$SIGI_ATENDENTE_EMAIL" Atendente SIGI legislagd.user sigi.atendente
+
+if [ -z "$CHATWOOT_OIDC_CLIENT_SECRET" ]; then
+  echo "CHATWOOT_OIDC_CLIENT_SECRET deve ser definido no ambiente local." >&2
+  exit 1
+fi
+
+if [ -z "$CHATWOOT_SSO_PASSWORD" ]; then
+  echo "CHATWOOT_SSO_PASSWORD deve ser definido no ambiente local." >&2
+  exit 1
 fi
 
 CHATWOOT_CLIENT_ID="$(client_internal_id "$CHATWOOT_OIDC_CLIENT_ID")"
