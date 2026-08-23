@@ -5,6 +5,7 @@ urls=(
   "http://portal.legislagd.localhost"
   "http://sapl.legislagd.localhost"
   "http://sigi.legislagd.localhost"
+  "http://ecidade.legislagd.localhost"
   "http://chat.sigi.legislagd.localhost"
   "http://qdrant.sigi.legislagd.localhost/collections"
   "http://ia.sigi.legislagd.localhost/api/version"
@@ -23,3 +24,4 @@ git -C /mnt/c/LegislaGD/modules/PortalModelo-SD branch --show-current
 git -C /mnt/c/LegislaGD/modules/SAPL-SD branch --show-current
 git -C /mnt/c/LegislaGD/modules/SIGI-SD branch --show-current
 git -C /mnt/c/LegislaGD/modules/SIGI-SD/apps/chatwoot-sd branch --show-current
+git -C /mnt/c/LegislaGD/modules/e-Cidade-SD branch --show-current

@@ -143,11 +143,22 @@ ensure_realm_user() {
 }
 
 echo "Autenticando no Keycloak local..."
-kc config credentials \
+if ! kc config credentials \
   --server http://localhost:8080 \
   --realm master \
   --user "$KEYCLOAK_ADMIN_USER" \
-  --password "$KEYCLOAK_ADMIN_PASSWORD" >/dev/null
+  --password "$KEYCLOAK_ADMIN_PASSWORD" >/dev/null; then
+  if [ "$KEYCLOAK_ADMIN_PASSWORD" = "admin_dev_password" ]; then
+    exit 1
+  fi
+
+  echo "Senha admin do .env nao autenticou; tentando senha local padrao do ambiente dev..."
+  kc config credentials \
+    --server http://localhost:8080 \
+    --realm master \
+    --user "$KEYCLOAK_ADMIN_USER" \
+    --password admin_dev_password >/dev/null
+fi
 
 echo "Garantindo locale pt-BR no realm $KEYCLOAK_REALM..."
 kc update "realms/$KEYCLOAK_REALM" \
@@ -191,6 +202,9 @@ else
     -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
 fi
 
+echo "Garantindo client scope roles no client $SAPL_OIDC_CLIENT_ID..."
+ensure_default_client_scope "$CLIENT_ID" roles
+
 SIGI_CLIENT_ID="$(client_internal_id "$SIGI_OIDC_CLIENT_ID")"
 
 if [ -z "$SIGI_CLIENT_ID" ]; then
@@ -226,6 +240,9 @@ else
     -s "webOrigins=[\"$SIGI_SD_URL\"]" \
     -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
 fi
+
+echo "Garantindo client scope roles no client $SIGI_OIDC_CLIENT_ID..."
+ensure_default_client_scope "$SIGI_CLIENT_ID" roles
 
 echo "Garantindo usuarios do SIGI..."
 ensure_realm_user "$SIGI_ADMIN_USER" "$SIGI_ADMIN_PASSWORD" "$SIGI_ADMIN_EMAIL" Administrador SIGI legislagd.user sigi.admin

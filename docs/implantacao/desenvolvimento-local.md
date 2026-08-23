@@ -14,9 +14,9 @@ Sem alterar o `.env`, o comportamento esperado e:
 - `LEGISLAGD_ENABLE_SAPL=1`.
 - `LEGISLAGD_ENABLE_SIGI=1`.
 - `LEGISLAGD_ENABLE_KEYCLOAK=1`.
-- `LEGISLAGD_INCLUDE_ECIDADE=0`.
+- `LEGISLAGD_ENABLE_ECIDADE=1`.
 
-Assim, `make up` sobe Keycloak, PortalModelo-SD, SAPL-SD, SIGI-SD e o Traefik central. O e-Cidade-SD permanece desligado nesta etapa.
+Assim, `make up` sobe Keycloak, PortalModelo-SD, SAPL-SD, SIGI-SD, e-Cidade-SD e o Traefik central.
 
 O banco da plataforma integrada tambem e centralizado: `make up` sobe um unico container PostgreSQL chamado `legislagd-postgres`, com bases e usuarios separados para cada modulo.
 
@@ -29,7 +29,7 @@ O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a
 - `PortalModelo-SD`: portal institucional e fachada publica.
 - `SAPL-SD`: processo legislativo e dados legislativos oficiais.
 - `SIGI-SD`: atendimento, ouvidoria, e-SIC, IA e automacoes de relacionamento.
-- `e-Cidade-SD`: modulo administrativo previsto, mas ainda fora da subida principal.
+- `e-Cidade-SD`: administracao, financas, RH, compras e patrimonio.
 
 ## Requisitos
 
@@ -83,7 +83,7 @@ LEGISLAGD_COMPONENT_BRANCH=dev
 LEGISLAGD_ENABLE_PORTAL=1
 LEGISLAGD_ENABLE_SAPL=1
 LEGISLAGD_ENABLE_SIGI=1
-LEGISLAGD_INCLUDE_ECIDADE=0
+LEGISLAGD_ENABLE_ECIDADE=1
 ```
 
 Mapeamento recomendado:
@@ -110,7 +110,7 @@ atendimento/CiRM do SIGI.
 
 Use `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0` para retirar um modulo da subida principal. Os comandos individuais continuam disponiveis, por exemplo `make up sapl`.
 
-Use `LEGISLAGD_INCLUDE_ECIDADE=1` somente quando a etapa administrativa estiver pronta para entrar na plataforma.
+Use `LEGISLAGD_ENABLE_ECIDADE=0` quando quiser retirar o e-Cidade-SD da subida principal. O comando individual continua disponivel com `make up ecidade`.
 
 ## Subida principal
 
@@ -130,11 +130,47 @@ Esse comando sobe:
 - SAPL-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_SAPL=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
 - Chatwoot-SD como fonte de build do Chatwoot, quando `LEGISLAGD_ENABLE_SIGI=1`.
+- e-Cidade-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_ECIDADE=1`.
 - Migracoes do SAPL-SD e sincronizacao de schema do SIGI-SD no PostgreSQL central.
 
-Com o `.env.example` ou sem `.env`, esses tres modulos ficam habilitados e a branch padrao e `dev`. O e-Cidade-SD nao sobe nesta etapa.
+Com o `.env.example` ou sem `.env`, PortalModelo-SD, SAPL-SD, SIGI-SD, Keycloak e e-Cidade-SD ficam habilitados. A branch padrao dos modulos e `dev`, exceto o e-Cidade-SD, que usa `main` por padrao nesta etapa.
 
 Observacao sobre o SIGI-SD: no estado atual do fork, as migrations Doctrine existentes carregam SQL especifico de MySQL. Para desenvolvimento local integrado com PostgreSQL, o LegislaGD usa `doctrine:schema:update` no alvo `make migrate-sigi`. Antes de homologacao/producao, as migrations do SIGI-SD devem ser regeneradas para PostgreSQL.
+
+## Nova instalacao local com cargas iniciais
+
+Para preparar um ambiente local de desenvolvimento ja ativo, execute:
+
+```bash
+make dev-install
+```
+
+Esse comando:
+
+- cria `.env` a partir de `.env.example`, quando necessario;
+- define valores locais para `CHATWOOT_OIDC_CLIENT_SECRET` e `CHATWOOT_SSO_PASSWORD` se estiverem vazios;
+- sobe a plataforma integrada;
+- aplica migrations/esquemas dos modulos;
+- garante usuarios administrativos locais do SAPL-SD;
+- cria/atualiza clients, roles e usuarios locais do Keycloak;
+- carrega fixtures estruturais do SIGI-SD;
+- cria/atualiza o usuario local do Chatwoot usado pelo SSO LegislaGD;
+- recria a carga inicial do PortalModelo-SD via buildout;
+- executa a carga inicial do e-Cidade-SD usando `docker/install.sh` do modulo contra o PostgreSQL central.
+
+Tambem e possivel rodar cada carga separadamente:
+
+```bash
+make prepare-dev-env
+make initial-load-sapl
+make initial-load-sigi
+make initial-load-keycloak
+make initial-load-portal
+make initial-load-ecidade
+make initial-load
+```
+
+`make initial-load-sigi` executa `doctrine:fixtures:load --no-interaction` e, em seguida, `scripts/provision-chatwoot-dev-sso.sh` para garantir o usuario local do Chatwoot vinculado ao SSO. Use em ambiente local/desenvolvimento, pois fixtures podem recriar dados estruturais. `make initial-load-portal` executa a rotina de seed do PortalModelo-SD e pode recriar o site local de desenvolvimento. `make initial-load-ecidade` usa a carga base do e-Cidade-SD no banco central `ecidade`.
 
 ## Banco de dados central
 
@@ -145,6 +181,7 @@ No modo integrado do LegislaGD existe apenas uma instalacao PostgreSQL:
 | `sapl_sd` | `sapl` | SAPL-SD |
 | `sigi_sd` | `sigi` | SIGI-SD admin e worker |
 | `chatwoot_production` | `chatwoot` | Chatwoot do SIGI-SD |
+| `ecidade` | `dbseller` | e-Cidade-SD |
 
 As credenciais podem ser alteradas no `.env`:
 
@@ -159,9 +196,12 @@ SIGI_DB_PASSWORD=sigi_dev_password
 CHATWOOT_DB_NAME=chatwoot_production
 CHATWOOT_DB_USER=chatwoot
 CHATWOOT_DB_PASSWORD=chatwoot_dev_password
+ECIDADE_DB_NAME=ecidade
+ECIDADE_DB_USER=dbseller
+ECIDADE_DB_PASSWORD=dbseller
 ```
 
-Os Postgres dos composes originais dos modulos ficam em modo `standalone` quando eles sao executados pelo LegislaGD. Assim, os repositorios ainda podem rodar isolados com seus composes proprios, mas a plataforma integrada usa somente `legislagd-postgres`.
+Os bancos dos composes originais dos modulos nao devem ser usados pela plataforma integrada. SAPL-SD, SIGI-SD, Chatwoot e e-Cidade-SD apontam para `legislagd-postgres` quando sobem pelo LegislaGD; os repositorios ainda podem rodar isolados com seus composes proprios.
 
 Para derrubar tudo:
 
@@ -218,6 +258,7 @@ Enderecos principais:
 | SIGI Qdrant | `http://qdrant.sigi.legislagd.localhost` |
 | SIGI pgAdmin | `http://pgadmin.sigi.legislagd.localhost` |
 | SIGI Portainer | `http://portainer.sigi.legislagd.localhost` |
+| e-Cidade-SD | `http://ecidade.legislagd.localhost` |
 
 Os nomes `*.localhost` normalmente resolvem para a maquina local sem editar `hosts`.
 

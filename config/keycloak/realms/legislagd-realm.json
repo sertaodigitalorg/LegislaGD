@@ -103,6 +103,25 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "sigi.atendente",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Atendente",
+      "lastName": "SIGI",
+      "email": "sigi.atendente@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "sigi.atendente"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sigi_dev_password",
+          "temporary": false
+        }
+      ]
     }
   ],
   "clients": [

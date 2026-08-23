@@ -70,7 +70,7 @@ component_branch() {
       echo "${CHATWOOT_SD_BRANCH:-${default_branch}}"
       ;;
     e-Cidade-SD)
-      echo "${ECIDADE_SD_BRANCH:-${default_branch}}"
+      echo "${ECIDADE_SD_BRANCH:-main}"
       ;;
     *)
       echo "${default_branch}"
@@ -95,7 +95,7 @@ selected_components() {
   local include_portal="${LEGISLAGD_ENABLE_PORTAL:-1}"
   local include_sapl="${LEGISLAGD_ENABLE_SAPL:-1}"
   local include_sigi="${LEGISLAGD_ENABLE_SIGI:-1}"
-  local include_ecidade="${LEGISLAGD_INCLUDE_ECIDADE:-0}"
+  local include_ecidade="${LEGISLAGD_ENABLE_ECIDADE:-${LEGISLAGD_INCLUDE_ECIDADE:-1}}"
 
   if [[ "${include_portal}" == "1" || "${include_portal}" == "true" || "${include_portal}" == "yes" || "${include_portal}" == "on" ]]; then
     echo "PortalModelo-SD"
@@ -143,7 +143,7 @@ echo "PortalModelo-SD habilitado: ${LEGISLAGD_ENABLE_PORTAL:-1}"
 echo "SAPL-SD habilitado: ${LEGISLAGD_ENABLE_SAPL:-1}"
 echo "SIGI-SD habilitado: ${LEGISLAGD_ENABLE_SIGI:-1}"
 echo "Chatwoot-SD acompanha SIGI-SD quando SIGI esta habilitado"
-echo "e-Cidade-SD incluido: ${LEGISLAGD_INCLUDE_ECIDADE:-0}"
+echo "e-Cidade-SD incluido: ${LEGISLAGD_ENABLE_ECIDADE:-${LEGISLAGD_INCLUDE_ECIDADE:-1}}"
 
 mkdir -p "${WORKSPACE_DIR}"
 

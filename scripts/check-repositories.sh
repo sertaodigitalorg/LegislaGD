@@ -33,7 +33,8 @@ if [[ "${LEGISLAGD_ENABLE_SIGI:-1}" == "1" || "${LEGISLAGD_ENABLE_SIGI:-1}" == "
   REPOS+=("Chatwoot-SD")
 fi
 
-if [[ "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "1" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "true" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "yes" || "${LEGISLAGD_INCLUDE_ECIDADE:-0}" == "on" ]]; then
+include_ecidade="${LEGISLAGD_ENABLE_ECIDADE:-${LEGISLAGD_INCLUDE_ECIDADE:-1}}"
+if [[ "${include_ecidade}" == "1" || "${include_ecidade}" == "true" || "${include_ecidade}" == "yes" || "${include_ecidade}" == "on" ]]; then
   REPOS+=("e-Cidade-SD")
 fi
 

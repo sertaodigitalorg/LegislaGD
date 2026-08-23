@@ -1,0 +1,23 @@
+services:
+  ecidade_php56:
+    ports: []
+    environment:
+      DB_HOST: legislagd-postgres
+      DB_PORT: 5432
+      DB_DATABASE: ${ECIDADE_DB_NAME:-ecidade}
+      DB_USERNAME: ${ECIDADE_DB_USER:-dbseller}
+      DB_PASSWORD: ${ECIDADE_DB_PASSWORD:-dbseller}
+    networks:
+      - ecidade
+      - legislagd
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=legislagd
+      - traefik.http.routers.ecidade.rule=Host(`ecidade.legislagd.localhost`)
+      - traefik.http.routers.ecidade.entrypoints=web
+      - traefik.http.services.ecidade.loadbalancer.server.port=80
+
+networks:
+  legislagd:
+    external: true
+    name: legislagd
