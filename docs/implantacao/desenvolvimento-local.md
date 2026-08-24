@@ -114,6 +114,8 @@ atendimento/CiRM do SIGI.
 
 Use `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0`, `LEGISLAGD_ENABLE_PLENARIO=0` ou `LEGISLAGD_ENABLE_SIGI=0` para retirar um modulo da subida principal. Os comandos individuais continuam disponiveis, por exemplo `make up sapl`.
 
+O SAPL-SD recebe o atalho autenticado para o Plenario Digital por `LEGISLAGD_PLENARIO_DIGITAL_ENABLED` e `LEGISLAGD_PLENARIO_DIGITAL_URL`. Na plataforma integrada, o default acompanha `LEGISLAGD_ENABLE_PLENARIO`; em ambiente controlado ou execucao local do Plenario, a URL pode apontar para outro host HTTP/HTTPS valido.
+
 Use `LEGISLAGD_ENABLE_ECIDADE=0` quando quiser retirar o e-Cidade-SD da subida principal. O comando individual continua disponivel com `make up ecidade`.
 
 ## Subida principal
