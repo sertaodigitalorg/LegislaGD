@@ -25,6 +25,12 @@ A validacao funcional concluida no Google Drive em 2026-08-23 confirmou para o p
 - contingencias `LOCAL_COMPLETO`, `REMOTO_COM_CACHE`, `REMOTO_SEM_CONTINGENCIA`;
 - `HIBRIDO` reservado para evolucao futura.
 
+Na consolidacao tecnica de 2026-08-24, os papeis do Core foram separados dos
+cargos legislativos da sessao. O Keycloak/Core controla acesso tecnico por
+`plenario.admin`, `plenario.operador` e `plenario.parlamentar`. Presidencia,
+secretaria, presenca, quorum, direito de voto e cargo exercido em uma sessao
+continuam autoridade do SAPL e nao devem ser inferidos por role do Core.
+
 ## Decisao proposta
 
 Implementar o Plenario Digital como um Core Django independente, com banco proprio, integrado ao SAPL por um SAPL Adapter e contrato canonico.
@@ -37,6 +43,8 @@ O Core deve:
 - detectar capabilities por provider;
 - reaproveitar inicialmente `/painel-principal/<sessao>` e `/voto-individual/`;
 - descobrir a sessao acompanhada sem alterar estado legislativo no SAPL;
+- permitir que o Operador persista a sessao acompanhada no Core sem alterar o SAPL;
+- controlar acesso tecnico proprio sem substituir cargos legislativos da sessao;
 - tratar toda alteracao legislativa como concluida somente apos confirmacao do SAPL;
 - evitar acesso direto ao banco do SAPL.
 

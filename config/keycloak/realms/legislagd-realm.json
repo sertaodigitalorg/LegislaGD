@@ -24,9 +24,7 @@
       { "name": "sapl.consulta", "description": "Consulta autenticada no SAPL-SD" },
       { "name": "plenario.admin", "description": "Administrador macro do Plenario Digital" },
       { "name": "plenario.operador", "description": "Operador macro do Plenario Digital" },
-      { "name": "plenario.presidente", "description": "Presidente no Plenario Digital" },
-      { "name": "plenario.secretario", "description": "Secretario no Plenario Digital" },
-      { "name": "plenario.vereador", "description": "Vereador no Plenario Digital" },
+      { "name": "plenario.parlamentar", "description": "Parlamentar com acesso ao Plenario Digital; cargo na sessao permanece autoridade do SAPL" },
       { "name": "sigi.admin", "description": "Administrador macro do SIGI-SD" },
       { "name": "sigi.supervisor", "description": "Supervisor macro do SIGI-SD" },
       { "name": "sigi.atendente", "description": "Atendente macro do SIGI-SD" },
@@ -74,6 +72,44 @@
         {
           "type": "password",
           "value": "sapl_dev_password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "plenario.operador",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Operador",
+      "lastName": "Plenario",
+      "email": "plenario.operador@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "plenario.operador"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "plenario_dev_password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "plenario.parlamentar",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Parlamentar",
+      "lastName": "Plenario",
+      "email": "plenario.parlamentar@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "plenario.parlamentar"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "plenario_dev_password",
           "temporary": false
         }
       ]

@@ -11,10 +11,13 @@ Esta implantacao cobre o MVP seguro do Plenario Digital Core:
 - banco proprio `plenario_core` no PostgreSQL central do LegislaGD;
 - rota local `http://plenario.legislagd.localhost`;
 - health/readiness;
+- papeis tecnicos `plenario.admin`, `plenario.operador` e `plenario.parlamentar`;
 - descoberta de sessao acompanhada;
+- persistencia da sessao acompanhada no Core por acao explicita do Operador;
 - launcher do painel SAPL existente;
 - launcher do voto individual existente;
-- cadastro operacional de providers, plenarios, displays, dispositivos, prontidao tecnologica e mensagens.
+- cadastro operacional de providers, plenarios, displays, dispositivos, prontidao tecnologica e mensagens;
+- auditoria operacional de selecao e limpeza da sessao acompanhada.
 
 Fora do escopo:
 
@@ -49,6 +52,10 @@ PLENARIO_DB_USER=plenario
 PLENARIO_DB_PASSWORD=plenario_dev_password
 SAPL_BASE_URL=http://sapl.legislagd.localhost
 SAPL_INTERNAL_BASE_URL=http://sapl-dev:8000
+PLENARIO_AUTH_REQUIRED=false
+PLENARIO_ADMIN_ROLE=plenario.admin
+PLENARIO_OPERATOR_ROLE=plenario.operador
+PLENARIO_PARLIAMENTARY_ROLE=plenario.parlamentar
 ```
 
 ## Subida local
@@ -115,8 +122,11 @@ Ordem validada:
 1. Operador acessa `http://plenario.legislagd.localhost`.
 2. Core consulta o SAPL configurado.
 3. Core identifica a sessao acompanhada ou apresenta candidatas.
-4. Operador abre o painel SAPL existente pelo launcher.
-5. Vereador usa `/voto-individual/` existente do SAPL.
+4. Operador confirma ou seleciona manualmente a sessao acompanhada no Core.
+5. Operador abre o painel SAPL existente pelo launcher.
+6. Vereador usa `/voto-individual/` existente do SAPL.
 
 O SAPL permanece autoridade de sessao, presenca legislativa, voto e resultado.
-
+Presidente, Secretario e cargo exercido pelo parlamentar em uma sessao tambem
+permanecem autoridade do SAPL; o Core nao usa roles proprias para definir esses
+cargos legislativos.

@@ -318,6 +318,7 @@ Autorizacao:
 - Core mantem autorizacao operacional propria, restrita a configuracoes, dispositivos, displays e comandos disponiveis.
 - Para Parlamentar, a correlacao com SAPL deve vir do SAPL (`Votante`/parlamentar) ou de endpoint proprio, nao de cadastro paralelo.
 - Perfis funcionais validados para o piloto: Administrador, Operador, Presidente, Secretario e Vereador.
+- No Core/Keycloak, os papeis tecnicos ficam limitados a `plenario.admin`, `plenario.operador` e `plenario.parlamentar`; Presidente, Secretario e cargo parlamentar exercido na sessao sao autoridade do SAPL.
 
 Machine-to-machine:
 
