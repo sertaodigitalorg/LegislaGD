@@ -1,0 +1,25 @@
+services:
+  plenario-core:
+    environment:
+      DATABASE_URL: postgresql://${PLENARIO_DB_USER:-plenario}:${PLENARIO_DB_PASSWORD:-plenario_dev_password}@legislagd-postgres:5432/${PLENARIO_DB_NAME:-plenario_core}
+      PLENARIO_DEBUG: ${PLENARIO_DEBUG:-true}
+      PLENARIO_ALLOWED_HOSTS: ${PLENARIO_ALLOWED_HOSTS:-localhost,127.0.0.1,plenario.legislagd.localhost}
+      PLENARIO_CSRF_TRUSTED_ORIGINS: ${PLENARIO_CSRF_TRUSTED_ORIGINS:-http://plenario.legislagd.localhost}
+      SAPL_BASE_URL: ${SAPL_BASE_URL:-http://sapl.legislagd.localhost}
+      SAPL_INTERNAL_BASE_URL: ${SAPL_INTERNAL_BASE_URL:-http://sapl-dev:8000}
+      SAPL_API_TOKEN: ${SAPL_API_TOKEN:-}
+      SAPL_TIMEOUT_SECONDS: ${SAPL_TIMEOUT_SECONDS:-5}
+    networks:
+      - default
+      - legislagd
+    labels:
+      traefik.enable: "true"
+      traefik.docker.network: "legislagd"
+      traefik.http.routers.plenario.rule: "Host(`plenario.legislagd.localhost`)"
+      traefik.http.routers.plenario.entrypoints: "web"
+      traefik.http.services.plenario.loadbalancer.server.port: "8000"
+
+networks:
+  legislagd:
+    external: true
+    name: legislagd

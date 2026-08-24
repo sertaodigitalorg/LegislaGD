@@ -22,6 +22,11 @@
       { "name": "sapl.operador", "description": "Operador macro do SAPL-SD" },
       { "name": "sapl.parlamentar", "description": "Parlamentar ou autor no SAPL-SD" },
       { "name": "sapl.consulta", "description": "Consulta autenticada no SAPL-SD" },
+      { "name": "plenario.admin", "description": "Administrador macro do Plenario Digital" },
+      { "name": "plenario.operador", "description": "Operador macro do Plenario Digital" },
+      { "name": "plenario.presidente", "description": "Presidente no Plenario Digital" },
+      { "name": "plenario.secretario", "description": "Secretario no Plenario Digital" },
+      { "name": "plenario.vereador", "description": "Vereador no Plenario Digital" },
       { "name": "sigi.admin", "description": "Administrador macro do SIGI-SD" },
       { "name": "sigi.supervisor", "description": "Supervisor macro do SIGI-SD" },
       { "name": "sigi.atendente", "description": "Atendente macro do SIGI-SD" },
@@ -163,6 +168,25 @@
       ],
       "webOrigins": [
         "http://sapl.legislagd.localhost"
+      ]
+    },
+    {
+      "clientId": "plenario",
+      "name": "Plenario Digital",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": [
+        "http://plenario.legislagd.localhost/*"
+      ],
+      "webOrigins": [
+        "http://plenario.legislagd.localhost"
       ]
     },
     {

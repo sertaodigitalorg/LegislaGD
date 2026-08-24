@@ -16,11 +16,11 @@ Sem alterar o `.env`, o comportamento esperado e:
 - `LEGISLAGD_ENABLE_KEYCLOAK=1`.
 - `LEGISLAGD_ENABLE_ECIDADE=1`.
 
-Assim, `make up` sobe Keycloak, PortalModelo-SD, SAPL-SD, SIGI-SD, e-Cidade-SD e o Traefik central.
+Assim, `make up` sobe Keycloak, PortalModelo-SD, SAPL-SD, Plenario-Digital-Core, SIGI-SD, e-Cidade-SD e o Traefik central.
 
 O banco da plataforma integrada tambem e centralizado: `make up` sobe um unico container PostgreSQL chamado `legislagd-postgres`, com bases e usuarios separados para cada modulo.
 
-O Keycloak usa banco e usuario proprios dentro do PostgreSQL central `legislagd-postgres`. Ele nao compartilha schema nem credenciais com SAPL-SD, SIGI-SD, Chatwoot ou e-Cidade-SD.
+O Keycloak usa banco e usuario proprios dentro do PostgreSQL central `legislagd-postgres`. Ele nao compartilha schema nem credenciais com SAPL-SD, Plenario-Digital-Core, SIGI-SD, Chatwoot ou e-Cidade-SD.
 
 ## Papel do LegislaGD
 
@@ -28,6 +28,7 @@ O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a
 
 - `PortalModelo-SD`: portal institucional e fachada publica.
 - `SAPL-SD`: processo legislativo e dados legislativos oficiais.
+- `Plenario-Digital-Core`: experiencia operacional do plenario, integrada ao SAPL por API.
 - `SIGI-SD`: atendimento, ouvidoria, e-SIC, IA e automacoes de relacionamento.
 - `e-Cidade-SD`: administracao, financas, RH, compras e patrimonio.
 
@@ -39,6 +40,7 @@ O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a
   - `C:\LegislaGD`
   - `C:\LegislaGD\modules\PortalModelo-SD`
   - `C:\LegislaGD\modules\SAPL-SD`
+  - `C:\LegislaGD\modules\Plenario-Digital-Core`
   - `C:\LegislaGD\modules\SIGI-SD`
   - `C:\LegislaGD\modules\SIGI-SD\apps\chatwoot-sd`
 
@@ -48,6 +50,7 @@ Se algum desses reposititorios ainda nao existir, `make up` chama `scripts/clone
 | --- | --- | --- |
 | PortalModelo-SD | `https://github.com/sertaodigitalorg/PortalModelo-SD.git` | `https://github.com/interlegis/portalmodelo.git` |
 | SAPL-SD | `https://github.com/sertaodigitalorg/SAPL-SD.git` | `https://github.com/interlegis/sapl.git` |
+| Plenario-Digital-Core | `https://github.com/sertaodigitalorg/Plenario-Digital-Core.git` | componente proprio |
 | SIGI-SD | `https://github.com/sertaodigitalorg/SIGI-SD.git` | mantido pelo Sertao Digital |
 | Chatwoot-SD | `https://github.com/sertaodigitalorg/Chatwoot-SD.git` | `https://github.com/chatwoot/chatwoot.git` |
 | e-Cidade-SD | `https://github.com/sertaodigitalorg/e-Cidade-SD.git` | `https://github.com/DBSeller/e-cidade.git` |
@@ -68,6 +71,7 @@ As URLs podem ser substituidas no `.env` quando for necessario usar outra fonte:
 ```bash
 PORTALMODELO_SD_GIT_URL=https://github.com/sertaodigitalorg/PortalModelo-SD.git
 SAPL_SD_GIT_URL=https://github.com/sertaodigitalorg/SAPL-SD.git
+PLENARIO_DIGITAL_CORE_GIT_URL=https://github.com/sertaodigitalorg/Plenario-Digital-Core.git
 SIGI_SD_GIT_URL=https://github.com/sertaodigitalorg/SIGI-SD.git
 CHATWOOT_SD_GIT_URL=https://github.com/sertaodigitalorg/Chatwoot-SD.git
 ECIDADE_SD_GIT_URL=https://github.com/sertaodigitalorg/e-Cidade-SD.git
@@ -108,7 +112,7 @@ acompanha o upstream Chatwoot a partir da branch `develop`. Ele e clonado dentro
 do SIGI-SD, em `apps/chatwoot-sd`, porque o Chatwoot e parte da plataforma de
 atendimento/CiRM do SIGI.
 
-Use `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0` para retirar um modulo da subida principal. Os comandos individuais continuam disponiveis, por exemplo `make up sapl`.
+Use `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0`, `LEGISLAGD_ENABLE_PLENARIO=0` ou `LEGISLAGD_ENABLE_SIGI=0` para retirar um modulo da subida principal. Os comandos individuais continuam disponiveis, por exemplo `make up sapl`.
 
 Use `LEGISLAGD_ENABLE_ECIDADE=0` quando quiser retirar o e-Cidade-SD da subida principal. O comando individual continua disponivel com `make up ecidade`.
 
@@ -128,12 +132,13 @@ Esse comando sobe:
 - Keycloak usando banco e usuario proprios no PostgreSQL central, quando `LEGISLAGD_ENABLE_KEYCLOAK=1`.
 - PortalModelo-SD, quando `LEGISLAGD_ENABLE_PORTAL=1`.
 - SAPL-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_SAPL=1`.
+- Plenario-Digital-Core apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_PLENARIO=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
 - Chatwoot-SD como fonte de build do Chatwoot, quando `LEGISLAGD_ENABLE_SIGI=1`.
 - e-Cidade-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_ECIDADE=1`.
 - Migracoes do SAPL-SD e sincronizacao de schema do SIGI-SD no PostgreSQL central.
 
-Com o `.env.example` ou sem `.env`, PortalModelo-SD, SAPL-SD, SIGI-SD, Keycloak e e-Cidade-SD ficam habilitados. A branch padrao dos modulos e `dev`, exceto o e-Cidade-SD, que usa `main` por padrao nesta etapa.
+Com o `.env.example` ou sem `.env`, PortalModelo-SD, SAPL-SD, Plenario-Digital-Core, SIGI-SD, Keycloak e e-Cidade-SD ficam habilitados. A branch padrao dos modulos e `dev`, exceto o Plenario-Digital-Core e o e-Cidade-SD, que usam `main` por padrao nesta etapa.
 
 Observacao sobre o SIGI-SD: no estado atual do fork, as migrations Doctrine existentes carregam SQL especifico de MySQL. Para desenvolvimento local integrado com PostgreSQL, o LegislaGD usa `doctrine:schema:update` no alvo `make migrate-sigi`. Antes de homologacao/producao, as migrations do SIGI-SD devem ser regeneradas para PostgreSQL.
 
@@ -179,6 +184,7 @@ No modo integrado do LegislaGD existe apenas uma instalacao PostgreSQL:
 | Banco | Usuario | Uso |
 | --- | --- | --- |
 | `sapl_sd` | `sapl` | SAPL-SD |
+| `plenario_core` | `plenario` | Plenario-Digital-Core |
 | `sigi_sd` | `sigi` | SIGI-SD admin e worker |
 | `chatwoot_production` | `chatwoot` | Chatwoot do SIGI-SD |
 | `ecidade` | `dbseller` | e-Cidade-SD |
@@ -222,6 +228,7 @@ Use os comandos individuais quando quiser trabalhar em apenas um modulo com o me
 ```bash
 make up portal
 make up sapl
+make up plenario
 make up sigi
 ```
 
@@ -251,6 +258,7 @@ Enderecos principais:
 | Keycloak | `http://id.legislagd.localhost` |
 | PortalModelo-SD | `http://portal.legislagd.localhost` |
 | SAPL-SD | `http://sapl.legislagd.localhost` |
+| Plenario Digital | `http://plenario.legislagd.localhost` |
 | SIGI-SD admin | `http://sigi.legislagd.localhost` |
 | SIGI Chatwoot | `http://chat.sigi.legislagd.localhost` |
 | SIGI Botpress | `http://bot.sigi.legislagd.localhost` |

@@ -35,12 +35,14 @@ create_user "$KEYCLOAK_DB_USER" "$KEYCLOAK_DB_PASSWORD"
 create_user "$ECIDADE_DB_USER" "$ECIDADE_DB_PASSWORD"
 create_user "$ECIDADE_PLUGIN_DB_USER" "$ECIDADE_PLUGIN_DB_PASSWORD"
 create_user "$ECIDADE_LEGACY_DB_USER" "$ECIDADE_LEGACY_DB_PASSWORD"
+create_user "${PLENARIO_DB_USER:-plenario}" "${PLENARIO_DB_PASSWORD:-plenario_dev_password}"
 
 create_database "$SAPL_DB_NAME" "$SAPL_DB_USER"
 create_database "$SIGI_DB_NAME" "$SIGI_DB_USER"
 create_database "$CHATWOOT_DB_NAME" "$CHATWOOT_DB_USER"
 create_database "$KEYCLOAK_DB_NAME" "$KEYCLOAK_DB_USER"
 create_database "$ECIDADE_DB_NAME" "$ECIDADE_DB_USER"
+create_database "${PLENARIO_DB_NAME:-plenario_core}" "${PLENARIO_DB_USER:-plenario}"
 
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$SIGI_DB_NAME" <<-EOSQL
 CREATE EXTENSION IF NOT EXISTS vector;
