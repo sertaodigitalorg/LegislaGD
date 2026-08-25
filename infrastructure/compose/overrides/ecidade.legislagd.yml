@@ -1,6 +1,6 @@
 services:
   ecidade_php56:
-    ports: []
+    ports: !reset []
     environment:
       DB_HOST: legislagd-postgres
       DB_PORT: 5432
@@ -11,11 +11,11 @@ services:
       - ecidade
       - legislagd
     labels:
-      - traefik.enable=true
-      - traefik.docker.network=legislagd
-      - traefik.http.routers.ecidade.rule=Host(`ecidade.legislagd.localhost`)
-      - traefik.http.routers.ecidade.entrypoints=web
-      - traefik.http.services.ecidade.loadbalancer.server.port=80
+      traefik.enable: "true"
+      traefik.docker.network: "legislagd"
+      traefik.http.routers.ecidade.rule: "Host(`ecidade.legislagd.localhost`)"
+      traefik.http.routers.ecidade.entrypoints: "web"
+      traefik.http.services.ecidade.loadbalancer.server.port: "80"
 
 networks:
   legislagd:
