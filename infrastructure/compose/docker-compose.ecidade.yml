@@ -1,12 +1,26 @@
 services:
   ecidade_php56:
-    ports: !reset []
+    build:
+      context: ../../modules/e-Cidade-SD/docker/php56-apache
+    container_name: ecidade_php56
+    expose:
+      - "80"
+    healthcheck:
+      test: ["CMD-SHELL", "apachectl -t >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 30s
     environment:
       DB_HOST: legislagd-postgres
       DB_PORT: 5432
       DB_DATABASE: ${ECIDADE_DB_NAME:-ecidade}
       DB_USERNAME: ${ECIDADE_DB_USER:-dbseller}
       DB_PASSWORD: ${ECIDADE_DB_PASSWORD:-dbseller}
+      ECIDADE_SCHEMA_OWNER_USER: ${ECIDADE_SCHEMA_OWNER_USER:-ecidade}
+      ECIDADE_SCHEMA_OWNER_PASSWORD: ${ECIDADE_SCHEMA_OWNER_PASSWORD:-ecidade}
+    volumes:
+      - ../../modules/e-Cidade-SD/ecidade:/var/www/html/
     networks:
       - ecidade
       - legislagd
@@ -15,9 +29,12 @@ services:
       traefik.docker.network: "legislagd"
       traefik.http.routers.ecidade.rule: "Host(`ecidade.legislagd.localhost`)"
       traefik.http.routers.ecidade.entrypoints: "web"
+      traefik.http.routers.ecidade.service: "ecidade"
       traefik.http.services.ecidade.loadbalancer.server.port: "80"
 
 networks:
+  ecidade:
+    driver: bridge
   legislagd:
     external: true
     name: legislagd

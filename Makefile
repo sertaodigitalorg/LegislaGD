@@ -15,7 +15,7 @@ PORTAL_COMPOSE = docker compose -p portalmodelo -f $(LEGISLAGD_COMPONENTS_DIR)/P
 SAPL_COMPOSE = docker compose -p sapl -f $(LEGISLAGD_COMPONENTS_DIR)/SAPL-SD/docker/docker-compose-dev-db.yml -f infrastructure/compose/overrides/sapl.legislagd.yml
 SIGI_COMPOSE = docker compose -p sigi -f $(LEGISLAGD_COMPONENTS_DIR)/SIGI-SD/docker-compose.yml -f infrastructure/compose/overrides/sigi.legislagd.yml
 PLENARIO_COMPOSE = docker compose -p plenario -f $(LEGISLAGD_COMPONENTS_DIR)/Plenario-Digital-Core/docker-compose.plenario.yml -f infrastructure/compose/overrides/plenario.legislagd.yml
-ECIDADE_COMPOSE = docker compose -p ecidade -f $(LEGISLAGD_COMPONENTS_DIR)/e-Cidade-SD/docker-compose.yml -f infrastructure/compose/overrides/ecidade.legislagd.yml
+ECIDADE_COMPOSE = docker compose -p ecidade -f infrastructure/compose/docker-compose.ecidade.yml
 SIGI_SERVICES = redis symfony-admin sigi-worker chatwoot chatwoot-worker botpress ollama qdrant portainer pgadmin
 ECIDADE_SERVICES = ecidade_php56
 
@@ -141,7 +141,8 @@ initial-load-portal: up-portal
 	$(PORTAL_COMPOSE) up -d --build
 
 initial-load-ecidade: up-ecidade
-	$(ECIDADE_COMPOSE) exec -T ecidade_php56 sh -lc "chmod -R 775 /var/www/html && if [ -f docker/database/ecidade_base.sql.gz ]; then gunzip -kf docker/database/ecidade_base.sql.gz; fi && bash docker/install.sh"
+	$(MAKE) ECIDADE_RESET_DB=1 provision-ecidade-db
+	$(ECIDADE_COMPOSE) exec -T ecidade_php56 sh -s < scripts/initial-load-ecidade.sh
 
 provision-keycloak-db: up-database
 	docker exec -i legislagd-postgres sh -s < infrastructure/database/provision-keycloak-database.sh
@@ -153,10 +154,13 @@ provision-ecidade-db: up-database
 		-e ECIDADE_DB_NAME="$${ECIDADE_DB_NAME:-ecidade}" \
 		-e ECIDADE_DB_USER="$${ECIDADE_DB_USER:-dbseller}" \
 		-e ECIDADE_DB_PASSWORD="$${ECIDADE_DB_PASSWORD:-dbseller}" \
+		-e ECIDADE_SCHEMA_OWNER_USER="$${ECIDADE_SCHEMA_OWNER_USER:-ecidade}" \
+		-e ECIDADE_SCHEMA_OWNER_PASSWORD="$${ECIDADE_SCHEMA_OWNER_PASSWORD:-ecidade}" \
 		-e ECIDADE_PLUGIN_DB_USER="$${ECIDADE_PLUGIN_DB_USER:-plugin}" \
 		-e ECIDADE_PLUGIN_DB_PASSWORD="$${ECIDADE_PLUGIN_DB_PASSWORD:-plugin}" \
 		-e ECIDADE_LEGACY_DB_USER="$${ECIDADE_LEGACY_DB_USER:-dbseller}" \
 		-e ECIDADE_LEGACY_DB_PASSWORD="$${ECIDADE_LEGACY_DB_PASSWORD:-dbseller}" \
+		-e ECIDADE_RESET_DB="$${ECIDADE_RESET_DB:-0}" \
 		legislagd-postgres sh -s < infrastructure/database/provision-ecidade-database.sh
 
 provision-plenario-db: up-database
@@ -209,7 +213,7 @@ up-plenario: bootstrap-repos up-database up-proxy provision-plenario-db
 
 up-ecidade build-ecidade: export LEGISLAGD_ENABLE_ECIDADE=1
 up-ecidade: bootstrap-repos provision-ecidade-db up-proxy
-	$(ECIDADE_COMPOSE) up -d --build --no-deps $(ECIDADE_SERVICES)
+	$(ECIDADE_COMPOSE) up -d --build --force-recreate --no-deps $(ECIDADE_SERVICES)
 
 migrate: $(addprefix migrate-,$(SELECTED_MODULES))
 
