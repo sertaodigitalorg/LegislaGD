@@ -10,7 +10,7 @@ services:
       SITE_URL: ${SAPL_SD_URL:-http://sapl.legislagd.localhost}
       DATABASE_URL: postgresql://${SAPL_DB_USER:-sapl}:${SAPL_DB_PASSWORD:-sapl_dev_password}@legislagd-postgres:5432/${SAPL_DB_NAME:-sapl_sd}
       LEGISLAGD_SIGI_SD_ENABLED: ${LEGISLAGD_SIGI_SD_ENABLED:-true}
-      LEGISLAGD_SIGI_SD_URL: ${LEGISLAGD_SIGI_SD_URL:-http://sigi.legislagd.localhost/protocolos}
+      LEGISLAGD_SIGI_SD_URL: ${LEGISLAGD_SIGI_SD_URL:-http://sigi.legislagd.localhost/pt_BR/admin/atendimentos}
       LEGISLAGD_SIGI_SD_CHAT_URL: ${LEGISLAGD_SIGI_SD_CHAT_URL:-http://chat.sigi.legislagd.localhost}
       LEGISLAGD_ECIDADE_ENABLED: ${LEGISLAGD_ECIDADE_ENABLED:-true}
       LEGISLAGD_ECIDADE_URL: ${LEGISLAGD_ECIDADE_URL:-http://ecidade.legislagd.localhost}
@@ -22,6 +22,8 @@ services:
       LEGISLAGD_ECIDADE_PATRIMONIO_URL: ${LEGISLAGD_ECIDADE_PATRIMONIO_URL:-http://ecidade.legislagd.localhost/patrimonio}
       LEGISLAGD_PORTAL_ENABLED: ${LEGISLAGD_PORTAL_ENABLED:-true}
       LEGISLAGD_PORTAL_URL: ${LEGISLAGD_PORTAL_URL:-http://portal.legislagd.localhost}
+      LEGISLAGD_PLENARIO_DIGITAL_ENABLED: ${LEGISLAGD_PLENARIO_DIGITAL_ENABLED:-${LEGISLAGD_ENABLE_PLENARIO:-1}}
+      LEGISLAGD_PLENARIO_DIGITAL_URL: ${LEGISLAGD_PLENARIO_DIGITAL_URL:-${PLENARIO_URL:-http://plenario.legislagd.localhost}}
       SAPL_OIDC_ENABLED: ${SAPL_OIDC_ENABLED:-true}
       SAPL_OIDC_PROVIDER_NAME: ${SAPL_OIDC_PROVIDER_NAME:-legislagd}
       SAPL_OIDC_DISPLAY_NAME: ${SAPL_OIDC_DISPLAY_NAME:-LegislaGD}

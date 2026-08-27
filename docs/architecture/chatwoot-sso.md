@@ -74,15 +74,24 @@ administrativa durante o piloto.
 
 ## Implementacao tecnica prevista no Chatwoot-SD
 
-Pontos a investigar/alterar no fork:
+Primeira fatia iniciada no fork `Chatwoot-SD`:
+
+- estrategia OmniAuth/OIDC `legislagd`;
+- registro condicional do provider por `CHATWOOT_OIDC_ENABLED`;
+- botao `Entrar com LegislaGD` na tela de login;
+- callback com vinculo por `sub` OIDC ou e-mail verificado;
+- bloqueio de usuario sem role `chatwoot.admin` ou `chatwoot.agent`;
+- mapeamento inicial de role para `administrator` ou `agent`;
+- criacao Just-In-Time somente quando `CHATWOOT_OIDC_ACCOUNT_ID` estiver
+  explicitamente configurado.
+
+Pontos ainda pendentes de validacao/ajuste no fork:
 
 - configuracoes de instalacao para habilitar o provider LegislaGD;
-- estrategia OmniAuth/OIDC para Keycloak;
-- rota de callback;
-- service para localizar/criar usuario por identidade externa;
-- persistencia de `provider`, `uid/sub`, e-mail e ultimo login;
-- mapeamento de roles para `administrator` ou `agent`;
-- componente de login para exibir `Entrar com LegislaGD`.
+- validacao ponta a ponta com Keycloak local;
+- testes automatizados focados no callback e no bloqueio por role;
+- decisao operacional sobre `CHATWOOT_OIDC_ACCOUNT_ID` por ambiente;
+- avaliacao de logout central.
 
 Variaveis previstas:
 
@@ -94,6 +103,8 @@ CHATWOOT_OIDC_ISSUER=http://id.legislagd.localhost/realms/legislagd
 CHATWOOT_OIDC_CLIENT_ID=chatwoot
 CHATWOOT_OIDC_CLIENT_SECRET=change_me
 CHATWOOT_OIDC_SCOPES=openid email profile
+CHATWOOT_OIDC_UI_LOCALES=pt-BR
+CHATWOOT_OIDC_ACCOUNT_ID=
 ```
 
 ## Criterios de aceite

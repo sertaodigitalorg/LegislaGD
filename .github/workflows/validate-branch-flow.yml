@@ -1,0 +1,31 @@
+name: Validate Branch Flow
+
+on:
+  pull_request:
+    branches:
+      - dev
+      - hml
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  validate-branch-flow:
+    name: Validate Branch Flow
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate source branch
+        shell: bash
+        env:
+          BASE_BRANCH: ${{ github.base_ref }}
+          HEAD_BRANCH: ${{ github.head_ref }}
+          BASE_REPOSITORY: ${{ github.repository }}
+          HEAD_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          echo "Source:      ${HEAD_REPOSITORY}:${HEAD_BRANCH}"
+          echo "Destination: ${BASE_REPOSITORY}:${BASE_BRANCH}"
+          bash scripts/validate-branch-flow.sh "${HEAD_BRANCH}" "${BASE_BRANCH}" "${HEAD_REPOSITORY}" "${BASE_REPOSITORY}"

@@ -1,0 +1,6 @@
+origem,destino,tipo,status,observacao
+/,/portal,home,pendente,Conferir capa e chamadas principais
+/institucional,/portal/institucional,pagina,pendente,Confirmar caminho real no site original
+/noticias,/portal/noticias,pasta,pendente,Inventariar itens antes de importar
+/transparencia,/portal/transparencia,pasta,pendente,Conferir anexos e links externos
+/ouvidoria,/portal/ouvidoria,pagina,pendente,Atualizar canais oficiais antes de publicar

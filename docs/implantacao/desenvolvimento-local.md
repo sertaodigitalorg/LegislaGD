@@ -14,13 +14,13 @@ Sem alterar o `.env`, o comportamento esperado e:
 - `LEGISLAGD_ENABLE_SAPL=1`.
 - `LEGISLAGD_ENABLE_SIGI=1`.
 - `LEGISLAGD_ENABLE_KEYCLOAK=1`.
-- `LEGISLAGD_INCLUDE_ECIDADE=0`.
+- `LEGISLAGD_ENABLE_ECIDADE=1`.
 
-Assim, `make up` sobe Keycloak, PortalModelo-SD, SAPL-SD, SIGI-SD e o Traefik central. O e-Cidade-SD permanece desligado nesta etapa.
+Assim, `make up` sobe Keycloak, PortalModelo-SD, SAPL-SD, Plenario-Digital-Core, SIGI-SD, e-Cidade-SD e o Traefik central.
 
 O banco da plataforma integrada tambem e centralizado: `make up` sobe um unico container PostgreSQL chamado `legislagd-postgres`, com bases e usuarios separados para cada modulo.
 
-O Keycloak usa banco e usuario proprios dentro do PostgreSQL central `legislagd-postgres`. Ele nao compartilha schema nem credenciais com SAPL-SD, SIGI-SD, Chatwoot ou e-Cidade-SD.
+O Keycloak usa banco e usuario proprios dentro do PostgreSQL central `legislagd-postgres`. Ele nao compartilha schema nem credenciais com SAPL-SD, Plenario-Digital-Core, SIGI-SD, Chatwoot ou e-Cidade-SD.
 
 ## Papel do LegislaGD
 
@@ -28,8 +28,9 @@ O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a
 
 - `PortalModelo-SD`: portal institucional e fachada publica.
 - `SAPL-SD`: processo legislativo e dados legislativos oficiais.
+- `Plenario-Digital-Core`: experiencia operacional do plenario, integrada ao SAPL por API.
 - `SIGI-SD`: atendimento, ouvidoria, e-SIC, IA e automacoes de relacionamento.
-- `e-Cidade-SD`: modulo administrativo previsto, mas ainda fora da subida principal.
+- `e-Cidade-SD`: administracao, financas, RH, compras e patrimonio.
 
 ## Requisitos
 
@@ -39,6 +40,7 @@ O LegislaGD e a plataforma central legislativa aberta. Neste repositorio ficam a
   - `C:\LegislaGD`
   - `C:\LegislaGD\modules\PortalModelo-SD`
   - `C:\LegislaGD\modules\SAPL-SD`
+  - `C:\LegislaGD\modules\Plenario-Digital-Core`
   - `C:\LegislaGD\modules\SIGI-SD`
   - `C:\LegislaGD\modules\SIGI-SD\apps\chatwoot-sd`
 
@@ -48,6 +50,7 @@ Se algum desses reposititorios ainda nao existir, `make up` chama `scripts/clone
 | --- | --- | --- |
 | PortalModelo-SD | `https://github.com/sertaodigitalorg/PortalModelo-SD.git` | `https://github.com/interlegis/portalmodelo.git` |
 | SAPL-SD | `https://github.com/sertaodigitalorg/SAPL-SD.git` | `https://github.com/interlegis/sapl.git` |
+| Plenario-Digital-Core | `https://github.com/sertaodigitalorg/Plenario-Digital-Core.git` | componente proprio |
 | SIGI-SD | `https://github.com/sertaodigitalorg/SIGI-SD.git` | mantido pelo Sertao Digital |
 | Chatwoot-SD | `https://github.com/sertaodigitalorg/Chatwoot-SD.git` | `https://github.com/chatwoot/chatwoot.git` |
 | e-Cidade-SD | `https://github.com/sertaodigitalorg/e-Cidade-SD.git` | `https://github.com/DBSeller/e-cidade.git` |
@@ -68,6 +71,7 @@ As URLs podem ser substituidas no `.env` quando for necessario usar outra fonte:
 ```bash
 PORTALMODELO_SD_GIT_URL=https://github.com/sertaodigitalorg/PortalModelo-SD.git
 SAPL_SD_GIT_URL=https://github.com/sertaodigitalorg/SAPL-SD.git
+PLENARIO_DIGITAL_CORE_GIT_URL=https://github.com/sertaodigitalorg/Plenario-Digital-Core.git
 SIGI_SD_GIT_URL=https://github.com/sertaodigitalorg/SIGI-SD.git
 CHATWOOT_SD_GIT_URL=https://github.com/sertaodigitalorg/Chatwoot-SD.git
 ECIDADE_SD_GIT_URL=https://github.com/sertaodigitalorg/e-Cidade-SD.git
@@ -83,7 +87,7 @@ LEGISLAGD_COMPONENT_BRANCH=dev
 LEGISLAGD_ENABLE_PORTAL=1
 LEGISLAGD_ENABLE_SAPL=1
 LEGISLAGD_ENABLE_SIGI=1
-LEGISLAGD_INCLUDE_ECIDADE=0
+LEGISLAGD_ENABLE_ECIDADE=1
 ```
 
 Mapeamento recomendado:
@@ -108,9 +112,11 @@ acompanha o upstream Chatwoot a partir da branch `develop`. Ele e clonado dentro
 do SIGI-SD, em `apps/chatwoot-sd`, porque o Chatwoot e parte da plataforma de
 atendimento/CiRM do SIGI.
 
-Use `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0` para retirar um modulo da subida principal. Os comandos individuais continuam disponiveis, por exemplo `make up sapl`.
+Use `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0`, `LEGISLAGD_ENABLE_PLENARIO=0` ou `LEGISLAGD_ENABLE_SIGI=0` para retirar um modulo da subida principal. Os comandos individuais continuam disponiveis, por exemplo `make up sapl`.
 
-Use `LEGISLAGD_INCLUDE_ECIDADE=1` somente quando a etapa administrativa estiver pronta para entrar na plataforma.
+O SAPL-SD recebe o atalho autenticado para o Plenario Digital por `LEGISLAGD_PLENARIO_DIGITAL_ENABLED` e `LEGISLAGD_PLENARIO_DIGITAL_URL`. Na plataforma integrada, o default acompanha `LEGISLAGD_ENABLE_PLENARIO`; em ambiente controlado ou execucao local do Plenario, a URL pode apontar para outro host HTTP/HTTPS valido.
+
+Use `LEGISLAGD_ENABLE_ECIDADE=0` quando quiser retirar o e-Cidade-SD da subida principal. O comando individual continua disponivel com `make up ecidade`.
 
 ## Subida principal
 
@@ -128,13 +134,50 @@ Esse comando sobe:
 - Keycloak usando banco e usuario proprios no PostgreSQL central, quando `LEGISLAGD_ENABLE_KEYCLOAK=1`.
 - PortalModelo-SD, quando `LEGISLAGD_ENABLE_PORTAL=1`.
 - SAPL-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_SAPL=1`.
+- Plenario-Digital-Core apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_PLENARIO=1`.
 - SIGI-SD e seus servicos definidos no compose do modulo, quando `LEGISLAGD_ENABLE_SIGI=1`.
 - Chatwoot-SD como fonte de build do Chatwoot, quando `LEGISLAGD_ENABLE_SIGI=1`.
+- e-Cidade-SD apontando para o PostgreSQL central, quando `LEGISLAGD_ENABLE_ECIDADE=1`.
 - Migracoes do SAPL-SD e sincronizacao de schema do SIGI-SD no PostgreSQL central.
 
-Com o `.env.example` ou sem `.env`, esses tres modulos ficam habilitados e a branch padrao e `dev`. O e-Cidade-SD nao sobe nesta etapa.
+Com o `.env.example` ou sem `.env`, PortalModelo-SD, SAPL-SD, Plenario-Digital-Core, SIGI-SD, Keycloak e e-Cidade-SD ficam habilitados. A branch padrao dos modulos e `dev`, exceto o Plenario-Digital-Core e o e-Cidade-SD, que usam `main` por padrao nesta etapa.
 
 Observacao sobre o SIGI-SD: no estado atual do fork, as migrations Doctrine existentes carregam SQL especifico de MySQL. Para desenvolvimento local integrado com PostgreSQL, o LegislaGD usa `doctrine:schema:update` no alvo `make migrate-sigi`. Antes de homologacao/producao, as migrations do SIGI-SD devem ser regeneradas para PostgreSQL.
+
+## Nova instalacao local com cargas iniciais
+
+Para preparar um ambiente local de desenvolvimento ja ativo, execute:
+
+```bash
+make dev-install
+```
+
+Esse comando:
+
+- cria `.env` a partir de `.env.example`, quando necessario;
+- define valores locais para `CHATWOOT_OIDC_CLIENT_SECRET` e `CHATWOOT_SSO_PASSWORD` se estiverem vazios;
+- sobe a plataforma integrada;
+- aplica migrations/esquemas dos modulos;
+- garante usuarios administrativos locais do SAPL-SD;
+- cria/atualiza clients, roles e usuarios locais do Keycloak;
+- carrega fixtures estruturais do SIGI-SD;
+- cria/atualiza o usuario local do Chatwoot usado pelo SSO LegislaGD;
+- recria a carga inicial do PortalModelo-SD via buildout;
+- executa a carga inicial do e-Cidade-SD usando `docker/install.sh` do modulo contra o PostgreSQL central.
+
+Tambem e possivel rodar cada carga separadamente:
+
+```bash
+make prepare-dev-env
+make initial-load-sapl
+make initial-load-sigi
+make initial-load-keycloak
+make initial-load-portal
+make initial-load-ecidade
+make initial-load
+```
+
+`make initial-load-sigi` executa `doctrine:fixtures:load --no-interaction` e, em seguida, `scripts/provision-chatwoot-dev-sso.sh` para garantir o usuario local do Chatwoot vinculado ao SSO. Use em ambiente local/desenvolvimento, pois fixtures podem recriar dados estruturais. `make initial-load-portal` executa a rotina de seed do PortalModelo-SD e pode recriar o site local de desenvolvimento. `make initial-load-ecidade` usa a carga base do e-Cidade-SD no banco central `ecidade`.
 
 ## Banco de dados central
 
@@ -143,8 +186,10 @@ No modo integrado do LegislaGD existe apenas uma instalacao PostgreSQL:
 | Banco | Usuario | Uso |
 | --- | --- | --- |
 | `sapl_sd` | `sapl` | SAPL-SD |
+| `plenario_core` | `plenario` | Plenario-Digital-Core |
 | `sigi_sd` | `sigi` | SIGI-SD admin e worker |
 | `chatwoot_production` | `chatwoot` | Chatwoot do SIGI-SD |
+| `ecidade` | `dbseller` | e-Cidade-SD |
 
 As credenciais podem ser alteradas no `.env`:
 
@@ -159,9 +204,12 @@ SIGI_DB_PASSWORD=sigi_dev_password
 CHATWOOT_DB_NAME=chatwoot_production
 CHATWOOT_DB_USER=chatwoot
 CHATWOOT_DB_PASSWORD=chatwoot_dev_password
+ECIDADE_DB_NAME=ecidade
+ECIDADE_DB_USER=dbseller
+ECIDADE_DB_PASSWORD=dbseller
 ```
 
-Os Postgres dos composes originais dos modulos ficam em modo `standalone` quando eles sao executados pelo LegislaGD. Assim, os repositorios ainda podem rodar isolados com seus composes proprios, mas a plataforma integrada usa somente `legislagd-postgres`.
+Os bancos dos composes originais dos modulos nao devem ser usados pela plataforma integrada. SAPL-SD, SIGI-SD, Chatwoot e e-Cidade-SD apontam para `legislagd-postgres` quando sobem pelo LegislaGD; os repositorios ainda podem rodar isolados com seus composes proprios.
 
 Para derrubar tudo:
 
@@ -182,6 +230,7 @@ Use os comandos individuais quando quiser trabalhar em apenas um modulo com o me
 ```bash
 make up portal
 make up sapl
+make up plenario
 make up sigi
 ```
 
@@ -211,6 +260,7 @@ Enderecos principais:
 | Keycloak | `http://id.legislagd.localhost` |
 | PortalModelo-SD | `http://portal.legislagd.localhost` |
 | SAPL-SD | `http://sapl.legislagd.localhost` |
+| Plenario Digital | `http://plenario.legislagd.localhost` |
 | SIGI-SD admin | `http://sigi.legislagd.localhost` |
 | SIGI Chatwoot | `http://chat.sigi.legislagd.localhost` |
 | SIGI Botpress | `http://bot.sigi.legislagd.localhost` |
@@ -218,6 +268,7 @@ Enderecos principais:
 | SIGI Qdrant | `http://qdrant.sigi.legislagd.localhost` |
 | SIGI pgAdmin | `http://pgadmin.sigi.legislagd.localhost` |
 | SIGI Portainer | `http://portainer.sigi.legislagd.localhost` |
+| e-Cidade-SD | `http://ecidade.legislagd.localhost` |
 
 Os nomes `*.localhost` normalmente resolvem para a maquina local sem editar `hosts`.
 
@@ -241,6 +292,18 @@ Usuario de teste local para o piloto SAPL-SD:
 | --- | --- | --- |
 | `sapl.operador` | `sapl_dev_password` | `sapl.operador` |
 
+Usuario de teste local para o piloto Chatwoot-SD:
+
+| Usuario | Senha | E-mail | Role |
+| --- | --- | --- | --- |
+| `chatwoot.agent` | definida em `CHATWOOT_SSO_PASSWORD` | `john@acme.inc` | `chatwoot.agent` |
+
+O e-mail padrao `john@acme.inc` acompanha o seed local do Chatwoot. Se a base
+local nao tiver esse usuario, configure `CHATWOOT_OIDC_ACCOUNT_ID` para permitir
+criacao Just-In-Time em uma conta especifica ou ajuste `CHATWOOT_SSO_EMAIL` para
+um usuario Chatwoot ja existente. Defina tambem `CHATWOOT_OIDC_CLIENT_SECRET`
+e `CHATWOOT_SSO_PASSWORD` no ambiente local antes de provisionar o Keycloak.
+
 Variaveis principais:
 
 ```bash
@@ -253,6 +316,11 @@ KEYCLOAK_ADMIN_PASSWORD=admin_dev_password
 KEYCLOAK_DB_NAME=keycloak
 KEYCLOAK_DB_USER=keycloak
 KEYCLOAK_DB_PASSWORD=keycloak_dev_password
+CHATWOOT_OIDC_ENABLED=true
+CHATWOOT_OIDC_CLIENT_ID=chatwoot
+CHATWOOT_OIDC_CLIENT_SECRET=
+CHATWOOT_OIDC_ISSUER=http://id.legislagd.localhost/realms/legislagd
+CHATWOOT_SSO_PASSWORD=
 ```
 
 Essas senhas sao padroes de desenvolvimento. Em homologacao e producao, devem ser substituidas por secrets ou variaveis fora do Git.

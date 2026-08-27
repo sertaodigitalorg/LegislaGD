@@ -14,14 +14,19 @@ export LEGISLAGD_GIT_STATUS_TIMEOUT COMPOSE_HTTP_TIMEOUT DOCKER_CLIENT_TIMEOUT
 PORTAL_COMPOSE = docker compose -p portalmodelo -f $(LEGISLAGD_COMPONENTS_DIR)/PortalModelo-SD/docker-compose.portal.yml -f infrastructure/compose/overrides/portal.legislagd.yml
 SAPL_COMPOSE = docker compose -p sapl -f $(LEGISLAGD_COMPONENTS_DIR)/SAPL-SD/docker/docker-compose-dev-db.yml -f infrastructure/compose/overrides/sapl.legislagd.yml
 SIGI_COMPOSE = docker compose -p sigi -f $(LEGISLAGD_COMPONENTS_DIR)/SIGI-SD/docker-compose.yml -f infrastructure/compose/overrides/sigi.legislagd.yml
+PLENARIO_COMPOSE = docker compose -p plenario -f $(LEGISLAGD_COMPONENTS_DIR)/Plenario-Digital-Core/docker-compose.plenario.yml -f infrastructure/compose/overrides/plenario.legislagd.yml
+ECIDADE_COMPOSE = docker compose -p ecidade -f infrastructure/compose/docker-compose.ecidade.yml
 SIGI_SERVICES = redis symfony-admin sigi-worker chatwoot chatwoot-worker botpress ollama qdrant portainer pgadmin
+ECIDADE_SERVICES = ecidade_php56
 
 LEGISLAGD_ENABLE_PORTAL ?= 1
 LEGISLAGD_ENABLE_SAPL ?= 1
 LEGISLAGD_ENABLE_SIGI ?= 1
 LEGISLAGD_ENABLE_KEYCLOAK ?= 1
+LEGISLAGD_ENABLE_PLENARIO ?= 1
+LEGISLAGD_ENABLE_ECIDADE ?= 1
 
-MODULES = all completo dev sapl portal sigi proxy database keycloak
+MODULES = all completo dev sapl portal sigi plenario ecidade proxy database keycloak
 PLATFORM_MODULES =
 ifneq (,$(filter 1 true yes on,$(LEGISLAGD_ENABLE_KEYCLOAK)))
 PLATFORM_MODULES += keycloak
@@ -35,31 +40,39 @@ endif
 ifneq (,$(filter 1 true yes on,$(LEGISLAGD_ENABLE_SIGI)))
 PLATFORM_MODULES += sigi
 endif
+ifneq (,$(filter 1 true yes on,$(LEGISLAGD_ENABLE_PLENARIO)))
+PLATFORM_MODULES += plenario
+endif
+ifneq (,$(filter 1 true yes on,$(LEGISLAGD_ENABLE_ECIDADE)))
+PLATFORM_MODULES += ecidade
+endif
 SELECTED_MODULES = $(or $(filter $(MODULES),$(MAKECMDGOALS)),all)
 
-.PHONY: help check clone bootstrap-repos validate provision-keycloak-db provision-keycloak-dev-users up down stop restart ps logs config pull build migrate urls \
-	up-all up-completo up-dev up-platform up-sapl up-portal up-sigi up-proxy up-keycloak \
+.PHONY: help check clone bootstrap-repos validate prepare-dev-env dev-install initial-load initial-load-sapl initial-load-sigi initial-load-keycloak initial-load-portal initial-load-ecidade provision-keycloak-db provision-keycloak-dev-users provision-ecidade-db provision-plenario-db up down stop restart ps logs config pull build migrate urls \
+	up-all up-completo up-dev up-platform up-sapl up-portal up-sigi up-plenario up-ecidade up-proxy up-keycloak \
 	up-database down-database stop-database restart-database ps-database logs-database config-database pull-database \
-	migrate-all migrate-completo migrate-dev migrate-sapl migrate-sigi \
-	down-all down-completo down-dev down-platform down-sapl down-portal down-sigi down-proxy down-keycloak \
-	stop-all stop-completo stop-dev stop-platform stop-sapl stop-portal stop-sigi stop-proxy stop-keycloak \
-	restart-all restart-completo restart-dev restart-sapl restart-portal restart-sigi restart-proxy restart-keycloak \
-	ps-all ps-completo ps-dev ps-sapl ps-portal ps-sigi ps-proxy ps-keycloak \
-	logs-all logs-completo logs-dev logs-sapl logs-portal logs-sigi logs-proxy logs-keycloak \
-	config-all config-completo config-dev config-sapl config-portal config-sigi config-proxy config-keycloak \
-	pull-all pull-completo pull-dev pull-sapl pull-portal pull-sigi pull-proxy pull-keycloak \
-	build-all build-completo build-dev build-sapl build-portal build-sigi build-proxy build-keycloak \
+	migrate-all migrate-completo migrate-dev migrate-sapl migrate-sigi migrate-plenario \
+	down-all down-completo down-dev down-platform down-sapl down-portal down-sigi down-plenario down-ecidade down-proxy down-keycloak \
+	stop-all stop-completo stop-dev stop-platform stop-sapl stop-portal stop-sigi stop-plenario stop-ecidade stop-proxy stop-keycloak \
+	restart-all restart-completo restart-dev restart-sapl restart-portal restart-sigi restart-plenario restart-ecidade restart-proxy restart-keycloak \
+	ps-all ps-completo ps-dev ps-sapl ps-portal ps-sigi ps-plenario ps-ecidade ps-proxy ps-keycloak \
+	logs-all logs-completo logs-dev logs-sapl logs-portal logs-sigi logs-plenario logs-ecidade logs-proxy logs-keycloak \
+	config-all config-completo config-dev config-sapl config-portal config-sigi config-plenario config-ecidade config-proxy config-keycloak \
+	pull-all pull-completo pull-dev pull-sapl pull-portal pull-sigi pull-plenario pull-ecidade pull-proxy pull-keycloak \
+	build-all build-completo build-dev build-sapl build-portal build-sigi build-plenario build-ecidade build-proxy build-keycloak \
 	$(MODULES)
 
 help:
 	@echo "LegislaGD - plataforma central legislativa aberta"
 	@echo ""
 	@echo "Uso principal:"
-	@echo "  make up              Sobe PortalModelo-SD, SAPL-SD, SIGI-SD e Traefik central"
+	@echo "  make up              Sobe PortalModelo-SD, SAPL-SD, SIGI-SD, Plenario Digital e Traefik central"
 	@echo "  make down            Derruba toda a plataforma central"
 	@echo "  make restart         Reinicia toda a plataforma central"
 	@echo "  make ps              Lista os containers da plataforma"
 	@echo "  make migrate         Aplica migracoes/esquemas dos modulos integrados"
+	@echo "  make dev-install     Prepara .env, sobe a stack e aplica cargas iniciais locais"
+	@echo "  make initial-load    Aplica cargas iniciais locais nos modulos integrados"
 	@echo "  make urls            Mostra os enderecos locais"
 	@echo "  make ps database     Lista o Postgres central"
 	@echo "  make ps keycloak     Lista o Keycloak"
@@ -74,14 +87,17 @@ help:
 	@echo "  make up portal       Sobe somente PortalModelo-SD com Traefik central"
 	@echo "  make up sapl         Sobe somente SAPL-SD com Traefik central"
 	@echo "  make up sigi         Sobe somente SIGI-SD com Traefik central"
+	@echo "  make up plenario     Sobe somente Plenario Digital Core com Traefik central"
+	@echo "  make up ecidade      Sobe somente e-Cidade-SD com Traefik central"
 	@echo "  make up keycloak     Sobe somente Keycloak usando o Postgres central"
 	@echo "  make down portal     Derruba somente PortalModelo-SD"
 	@echo "  make down sapl       Derruba somente SAPL-SD"
 	@echo "  make down sigi       Derruba somente SIGI-SD"
+	@echo "  make down ecidade    Derruba somente e-Cidade-SD"
 	@echo ""
 	@echo "Modulos habilitados no make up padrao: database $(or $(PLATFORM_MODULES),nenhum)"
 	@echo ""
-	@echo "Observacao: e-Cidade-SD nao sobe nesta etapa."
+	@echo "Observacao: e-Cidade-SD usa o Postgres central do LegislaGD nesta etapa."
 
 check:
 	./scripts/check-repositories.sh
@@ -94,11 +110,70 @@ bootstrap-repos:
 validate:
 	./scripts/validate-environment.sh
 
+prepare-dev-env:
+	sh ./scripts/ensure-dev-env.sh
+
+dev-install: prepare-dev-env
+	@$(MAKE) up
+	@$(MAKE) initial-load
+	@$(MAKE) urls
+
+initial-load: prepare-dev-env
+	@$(MAKE) initial-load-sapl
+	@$(MAKE) initial-load-sigi
+	@$(MAKE) initial-load-keycloak
+	@$(MAKE) initial-load-portal
+	@$(MAKE) initial-load-ecidade
+
+initial-load-sapl: up-sapl
+	sh ./scripts/reset-sapl-admin.sh
+
+initial-load-sigi: prepare-dev-env up-sigi
+	$(SIGI_COMPOSE) exec -T symfony-admin php bin/console doctrine:fixtures:load --no-interaction
+	sh ./scripts/provision-chatwoot-dev-sso.sh
+
+initial-load-keycloak: prepare-dev-env up-keycloak
+	set -a; . ./.env; set +a; sh ./scripts/provision-keycloak-dev-users.sh
+
+initial-load-portal: up-portal
+	$(PORTAL_COMPOSE) stop portalmodelo
+	$(PORTAL_COMPOSE) run --rm portalmodelo make buildout
+	$(PORTAL_COMPOSE) up -d --build
+
+initial-load-ecidade: up-ecidade
+	$(MAKE) ECIDADE_RESET_DB=1 provision-ecidade-db
+	$(ECIDADE_COMPOSE) exec -T ecidade_php56 sh -s < scripts/initial-load-ecidade.sh
+
 provision-keycloak-db: up-database
 	docker exec -i legislagd-postgres sh -s < infrastructure/database/provision-keycloak-database.sh
 
-provision-keycloak-dev-users: up-keycloak
-	sh ./scripts/provision-keycloak-dev-users.sh
+provision-ecidade-db: up-database
+	docker exec -i \
+		-e LEGISLAGD_POSTGRES_USER="$${LEGISLAGD_POSTGRES_USER:-legislagd}" \
+		-e LEGISLAGD_POSTGRES_DB="$${LEGISLAGD_POSTGRES_DB:-legislagd}" \
+		-e ECIDADE_DB_NAME="$${ECIDADE_DB_NAME:-ecidade}" \
+		-e ECIDADE_DB_USER="$${ECIDADE_DB_USER:-dbseller}" \
+		-e ECIDADE_DB_PASSWORD="$${ECIDADE_DB_PASSWORD:-dbseller}" \
+		-e ECIDADE_SCHEMA_OWNER_USER="$${ECIDADE_SCHEMA_OWNER_USER:-ecidade}" \
+		-e ECIDADE_SCHEMA_OWNER_PASSWORD="$${ECIDADE_SCHEMA_OWNER_PASSWORD:-ecidade}" \
+		-e ECIDADE_PLUGIN_DB_USER="$${ECIDADE_PLUGIN_DB_USER:-plugin}" \
+		-e ECIDADE_PLUGIN_DB_PASSWORD="$${ECIDADE_PLUGIN_DB_PASSWORD:-plugin}" \
+		-e ECIDADE_LEGACY_DB_USER="$${ECIDADE_LEGACY_DB_USER:-dbseller}" \
+		-e ECIDADE_LEGACY_DB_PASSWORD="$${ECIDADE_LEGACY_DB_PASSWORD:-dbseller}" \
+		-e ECIDADE_RESET_DB="$${ECIDADE_RESET_DB:-0}" \
+		legislagd-postgres sh -s < infrastructure/database/provision-ecidade-database.sh
+
+provision-plenario-db: up-database
+	docker exec -i \
+		-e LEGISLAGD_POSTGRES_USER="$${LEGISLAGD_POSTGRES_USER:-legislagd}" \
+		-e LEGISLAGD_POSTGRES_DB="$${LEGISLAGD_POSTGRES_DB:-legislagd}" \
+		-e PLENARIO_DB_NAME="$${PLENARIO_DB_NAME:-plenario_core}" \
+		-e PLENARIO_DB_USER="$${PLENARIO_DB_USER:-plenario}" \
+		-e PLENARIO_DB_PASSWORD="$${PLENARIO_DB_PASSWORD:-plenario_dev_password}" \
+		legislagd-postgres sh -s < infrastructure/database/provision-plenario-database.sh
+
+provision-keycloak-dev-users: prepare-dev-env up-keycloak
+	set -a; . ./.env; set +a; sh ./scripts/provision-keycloak-dev-users.sh
 
 up: $(addprefix up-,$(SELECTED_MODULES))
 
@@ -132,9 +207,17 @@ up-sigi: bootstrap-repos up-database up-proxy
 	$(SIGI_COMPOSE) up -d --build --no-deps $(SIGI_SERVICES)
 	@$(MAKE) migrate-sigi
 
+up-plenario build-plenario: export LEGISLAGD_ENABLE_PLENARIO=1
+up-plenario: bootstrap-repos up-database up-proxy provision-plenario-db
+	$(PLENARIO_COMPOSE) up -d --build
+
+up-ecidade build-ecidade: export LEGISLAGD_ENABLE_ECIDADE=1
+up-ecidade: bootstrap-repos provision-ecidade-db up-proxy
+	$(ECIDADE_COMPOSE) up -d --build --force-recreate --no-deps $(ECIDADE_SERVICES)
+
 migrate: $(addprefix migrate-,$(SELECTED_MODULES))
 
-migrate-all: migrate-sapl migrate-sigi
+migrate-all: migrate-sapl migrate-sigi migrate-plenario
 migrate-completo: migrate-all
 migrate-dev: migrate-all
 
@@ -144,13 +227,16 @@ migrate-sapl:
 migrate-sigi:
 	$(SIGI_COMPOSE) exec -T symfony-admin php bin/console doctrine:schema:update --force --no-interaction
 
+migrate-plenario:
+	$(PLENARIO_COMPOSE) exec -T plenario-core python manage.py migrate --noinput
+
 down: $(addprefix down-,$(SELECTED_MODULES))
 
 down-all: down-platform
 down-completo: down-platform
 down-dev: down-platform
 
-down-platform: down-sigi down-sapl down-portal down-keycloak down-database down-proxy
+down-platform: down-ecidade down-plenario down-sigi down-sapl down-portal down-keycloak down-database down-proxy
 
 down-portal:
 	$(PORTAL_COMPOSE) down
@@ -160,6 +246,12 @@ down-sapl:
 
 down-sigi:
 	$(SIGI_COMPOSE) down
+
+down-plenario:
+	$(PLENARIO_COMPOSE) down
+
+down-ecidade:
+	$(ECIDADE_COMPOSE) down
 
 down-database:
 	$(DATABASE_COMPOSE) down
@@ -176,7 +268,7 @@ stop-all: stop-platform
 stop-completo: stop-platform
 stop-dev: stop-platform
 
-stop-platform: stop-sigi stop-sapl stop-portal stop-keycloak stop-database stop-proxy
+stop-platform: stop-ecidade stop-plenario stop-sigi stop-sapl stop-portal stop-keycloak stop-database stop-proxy
 
 stop-portal:
 	$(PORTAL_COMPOSE) stop
@@ -186,6 +278,12 @@ stop-sapl:
 
 stop-sigi:
 	$(SIGI_COMPOSE) stop
+
+stop-plenario:
+	$(PLENARIO_COMPOSE) stop
+
+stop-ecidade:
+	$(ECIDADE_COMPOSE) stop
 
 stop-database:
 	$(DATABASE_COMPOSE) stop
@@ -204,13 +302,15 @@ restart-dev: restart-all
 restart-portal: down-portal up-portal
 restart-sapl: down-sapl up-sapl
 restart-sigi: down-sigi up-sigi
+restart-plenario: down-plenario up-plenario
+restart-ecidade: down-ecidade up-ecidade
 restart-proxy: down-proxy up-proxy
 restart-database: down-database up-database
 restart-keycloak: down-keycloak up-keycloak
 
 ps: $(addprefix ps-,$(SELECTED_MODULES))
 
-ps-all: ps-database ps-proxy ps-keycloak ps-portal ps-sapl ps-sigi
+ps-all: ps-database ps-proxy ps-keycloak ps-portal ps-sapl ps-sigi ps-plenario ps-ecidade
 ps-completo: ps-all
 ps-dev: ps-all
 
@@ -232,6 +332,12 @@ ps-sapl:
 ps-sigi:
 	$(SIGI_COMPOSE) ps
 
+ps-plenario:
+	$(PLENARIO_COMPOSE) ps
+
+ps-ecidade:
+	$(ECIDADE_COMPOSE) ps
+
 logs: $(addprefix logs-,$(SELECTED_MODULES))
 
 logs-all:
@@ -239,6 +345,8 @@ logs-all:
 	@echo "  make logs portal"
 	@echo "  make logs sapl"
 	@echo "  make logs sigi"
+	@echo "  make logs plenario"
+	@echo "  make logs ecidade"
 	@echo "  make logs proxy"
 	@echo "  make logs database"
 	@echo "  make logs keycloak"
@@ -255,6 +363,12 @@ logs-sapl:
 logs-sigi:
 	$(SIGI_COMPOSE) logs -f
 
+logs-plenario:
+	$(PLENARIO_COMPOSE) logs -f plenario-core
+
+logs-ecidade:
+	$(ECIDADE_COMPOSE) logs -f
+
 logs-proxy:
 	$(PROXY_COMPOSE) logs -f proxy
 
@@ -266,7 +380,7 @@ logs-keycloak:
 
 config: $(addprefix config-,$(SELECTED_MODULES))
 
-config-all: config-database config-proxy config-keycloak config-portal config-sapl config-sigi
+config-all: config-database config-proxy config-keycloak config-portal config-sapl config-sigi config-plenario config-ecidade
 config-completo: config-all
 config-dev: config-all
 
@@ -288,9 +402,15 @@ config-sapl:
 config-sigi:
 	$(SIGI_COMPOSE) config
 
+config-plenario:
+	$(PLENARIO_COMPOSE) config
+
+config-ecidade:
+	$(ECIDADE_COMPOSE) config
+
 pull: $(addprefix pull-,$(SELECTED_MODULES))
 
-pull-all: pull-database pull-proxy pull-keycloak pull-portal pull-sapl pull-sigi
+pull-all: pull-database pull-proxy pull-keycloak pull-portal pull-sapl pull-sigi pull-plenario pull-ecidade
 pull-completo: pull-all
 pull-dev: pull-all
 
@@ -312,9 +432,15 @@ pull-sapl:
 pull-sigi:
 	$(SIGI_COMPOSE) pull
 
+pull-plenario:
+	$(PLENARIO_COMPOSE) pull
+
+pull-ecidade:
+	$(ECIDADE_COMPOSE) pull
+
 build: $(addprefix build-,$(SELECTED_MODULES))
 
-build-all: build-portal build-sapl build-sigi
+build-all: build-portal build-sapl build-sigi build-plenario build-ecidade
 build-completo: build-all
 build-dev: build-all
 
@@ -333,6 +459,12 @@ build-sapl: bootstrap-repos
 build-sigi: bootstrap-repos
 	$(SIGI_COMPOSE) build
 
+build-plenario: bootstrap-repos
+	$(PLENARIO_COMPOSE) build
+
+build-ecidade: bootstrap-repos
+	$(ECIDADE_COMPOSE) build
+
 urls:
 	@echo "LegislaGD central:"
 	@echo "  http://legislagd.localhost"
@@ -343,6 +475,7 @@ urls:
 	@echo "Modulos integrados:"
 	@echo "  PortalModelo-SD: http://portal.legislagd.localhost"
 	@echo "  SAPL-SD:         http://sapl.legislagd.localhost"
+	@echo "  Plenario Digital:http://plenario.legislagd.localhost"
 	@echo "  SIGI-SD admin:   http://sigi.legislagd.localhost"
 	@echo "  SIGI Chatwoot:   http://chat.sigi.legislagd.localhost"
 	@echo "  SIGI Botpress:   http://bot.sigi.legislagd.localhost"
@@ -350,8 +483,9 @@ urls:
 	@echo "  SIGI Qdrant:     http://qdrant.sigi.legislagd.localhost"
 	@echo "  SIGI pgAdmin:    http://pgadmin.sigi.legislagd.localhost"
 	@echo "  SIGI Portainer:  http://portainer.sigi.legislagd.localhost"
+	@echo "  e-Cidade-SD:     http://ecidade.legislagd.localhost"
 	@echo ""
-	@echo "e-Cidade-SD: fora da subida principal nesta etapa."
+	@echo "e-Cidade-SD usa o Postgres central do LegislaGD nesta etapa."
 
 $(MODULES):
 	@:
