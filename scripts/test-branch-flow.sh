@@ -9,6 +9,7 @@ pass_cases=(
   "fix/test dev"
   "bugfix/test dev"
   "chore/test dev"
+  "docs/test dev"
   "dev hml"
   "hml main"
 )
@@ -22,6 +23,8 @@ fail_cases=(
   "bugfix/test main"
   "chore/test hml"
   "chore/test main"
+  "docs/test hml"
+  "docs/test main"
   "dev main"
   "hml dev"
   "main dev"
