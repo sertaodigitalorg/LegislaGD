@@ -28,8 +28,31 @@ CHATWOOT_OIDC_CLIENT_ID="${CHATWOOT_OIDC_CLIENT_ID:-chatwoot}"
 CHATWOOT_OIDC_CLIENT_SECRET="${CHATWOOT_OIDC_CLIENT_SECRET:-}"
 LEGISLAGD_SIGI_SD_CHAT_URL="${LEGISLAGD_SIGI_SD_CHAT_URL:-http://chat.sigi.legislagd.localhost}"
 
+ECIDADE_OIDC_CLIENT_ID="${ECIDADE_OIDC_CLIENT_ID:-ecidade}"
+ECIDADE_OIDC_CLIENT_SECRET="${ECIDADE_OIDC_CLIENT_SECRET:-}"
+ECIDADE_SD_URL="${ECIDADE_SD_URL:-http://ecidade.legislagd.localhost}"
+ECIDADE_SSO_USER="${ECIDADE_SSO_USER:-dbseller}"
+ECIDADE_SSO_PASSWORD="${ECIDADE_SSO_PASSWORD:-ecidade_dev_password}"
+ECIDADE_SSO_EMAIL="${ECIDADE_SSO_EMAIL:-dbseller@legislagd.localhost}"
+
 kc() {
   docker exec "$KEYCLOAK_CONTAINER" /opt/keycloak/bin/kcadm.sh "$@"
+}
+
+wait_for_keycloak() {
+  retries="${KEYCLOAK_READY_RETRIES:-60}"
+
+  while [ "$retries" -gt 0 ]; do
+    if docker exec "$KEYCLOAK_CONTAINER" bash -c "exec 3<>/dev/tcp/127.0.0.1/8080" >/dev/null 2>&1; then
+      return 0
+    fi
+
+    retries=$((retries - 1))
+    sleep 2
+  done
+
+  echo "Keycloak nao ficou pronto em tempo habil para provisionamento." >&2
+  return 1
 }
 
 client_internal_id() {
@@ -82,6 +105,68 @@ ensure_default_client_scope() {
 
   kc update "clients/$internal_client_id/default-client-scopes/$scope_id" \
     -r "$KEYCLOAK_REALM" >/dev/null
+}
+
+ensure_roles_token_claims() {
+  scope_id="$(client_scope_id roles)"
+
+  if [ -z "$scope_id" ]; then
+    echo "Client scope roles nao encontrado no realm $KEYCLOAK_REALM." >&2
+    exit 1
+  fi
+
+  realm_roles_mapper_id="$(kc get "client-scopes/$scope_id/protocol-mappers/models" \
+    -r "$KEYCLOAK_REALM" \
+    --fields id,name \
+    --format csv \
+    --noquotes | awk -F, '$2 == "realm roles" { print $1; exit }')"
+
+  if [ -n "$realm_roles_mapper_id" ]; then
+    kc update "client-scopes/$scope_id/protocol-mappers/models/$realm_roles_mapper_id" \
+      -r "$KEYCLOAK_REALM" \
+      -s 'config."user.attribute"=foo' \
+      -s 'config."claim.name"=realm_access.roles' \
+      -s 'config."jsonType.label"=String' \
+      -s 'config."multivalued"=true' \
+      -s 'config."id.token.claim"=true' \
+      -s 'config."access.token.claim"=true' \
+      -s 'config."userinfo.token.claim"=true' \
+      -s 'config."introspection.token.claim"=true' >/dev/null
+  else
+    kc create "client-scopes/$scope_id/protocol-mappers/models" \
+      -r "$KEYCLOAK_REALM" \
+      -s name="realm roles" \
+      -s protocol=openid-connect \
+      -s protocolMapper=oidc-usermodel-realm-role-mapper \
+      -s consentRequired=false \
+      -s 'config."user.attribute"=foo' \
+      -s 'config."claim.name"=realm_access.roles' \
+      -s 'config."jsonType.label"=String' \
+      -s 'config."multivalued"=true' \
+      -s 'config."id.token.claim"=true' \
+      -s 'config."access.token.claim"=true' \
+      -s 'config."userinfo.token.claim"=true' \
+      -s 'config."introspection.token.claim"=true' >/dev/null
+  fi
+
+  client_roles_mapper_id="$(kc get "client-scopes/$scope_id/protocol-mappers/models" \
+    -r "$KEYCLOAK_REALM" \
+    --fields id,name \
+    --format csv \
+    --noquotes | awk -F, '$2 == "client roles" { print $1; exit }')"
+
+  if [ -n "$client_roles_mapper_id" ]; then
+    kc update "client-scopes/$scope_id/protocol-mappers/models/$client_roles_mapper_id" \
+      -r "$KEYCLOAK_REALM" \
+      -s 'config."user.attribute"=foo' \
+      -s 'config."claim.name"=resource_access.${client_id}.roles' \
+      -s 'config."jsonType.label"=String' \
+      -s 'config."multivalued"=true' \
+      -s 'config."id.token.claim"=true' \
+      -s 'config."access.token.claim"=true' \
+      -s 'config."userinfo.token.claim"=true' \
+      -s 'config."introspection.token.claim"=true' >/dev/null
+  fi
 }
 
 ensure_realm_user() {
@@ -143,6 +228,7 @@ ensure_realm_user() {
 }
 
 echo "Autenticando no Keycloak local..."
+wait_for_keycloak
 if ! kc config credentials \
   --server http://localhost:8080 \
   --realm master \
@@ -165,6 +251,9 @@ kc update "realms/$KEYCLOAK_REALM" \
   -s internationalizationEnabled=true \
   -s defaultLocale=pt-BR \
   -s 'supportedLocales=["pt-BR","en"]' >/dev/null
+
+echo "Garantindo roles no ID token OIDC..."
+ensure_roles_token_claims
 
 CLIENT_ID="$(client_internal_id "$SAPL_OIDC_CLIENT_ID")"
 
@@ -247,6 +336,53 @@ ensure_default_client_scope "$SIGI_CLIENT_ID" roles
 echo "Garantindo usuarios do SIGI..."
 ensure_realm_user "$SIGI_ADMIN_USER" "$SIGI_ADMIN_PASSWORD" "$SIGI_ADMIN_EMAIL" Administrador SIGI legislagd.user sigi.admin
 ensure_realm_user "$SIGI_ATENDENTE_USER" "$SIGI_ATENDENTE_PASSWORD" "$SIGI_ATENDENTE_EMAIL" Atendente SIGI legislagd.user sigi.atendente
+
+if [ -z "$ECIDADE_OIDC_CLIENT_SECRET" ]; then
+  echo "ECIDADE_OIDC_CLIENT_SECRET deve ser definido no ambiente local." >&2
+  exit 1
+fi
+
+ECIDADE_CLIENT_ID="$(client_internal_id "$ECIDADE_OIDC_CLIENT_ID")"
+
+if [ -z "$ECIDADE_CLIENT_ID" ]; then
+  echo "Criando client OIDC $ECIDADE_OIDC_CLIENT_ID..."
+  kc create clients \
+    -r "$KEYCLOAK_REALM" \
+    -s "clientId=$ECIDADE_OIDC_CLIENT_ID" \
+    -s name=e-Cidade-SD \
+    -s enabled=true \
+    -s protocol=openid-connect \
+    -s publicClient=false \
+    -s "secret=$ECIDADE_OIDC_CLIENT_SECRET" \
+    -s standardFlowEnabled=true \
+    -s directAccessGrantsEnabled=false \
+    -s serviceAccountsEnabled=false \
+    -s "redirectUris=[\"$ECIDADE_SD_URL/*\"]" \
+    -s "webOrigins=[\"$ECIDADE_SD_URL\"]" \
+    -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
+
+  ECIDADE_CLIENT_ID="$(client_internal_id "$ECIDADE_OIDC_CLIENT_ID")"
+else
+  echo "Atualizando client OIDC $ECIDADE_OIDC_CLIENT_ID como confidencial..."
+  kc update "clients/$ECIDADE_CLIENT_ID" \
+    -r "$KEYCLOAK_REALM" \
+    -s enabled=true \
+    -s protocol=openid-connect \
+    -s publicClient=false \
+    -s "secret=$ECIDADE_OIDC_CLIENT_SECRET" \
+    -s standardFlowEnabled=true \
+    -s directAccessGrantsEnabled=false \
+    -s serviceAccountsEnabled=false \
+    -s "redirectUris=[\"$ECIDADE_SD_URL/*\"]" \
+    -s "webOrigins=[\"$ECIDADE_SD_URL\"]" \
+    -s 'attributes."pkce.code.challenge.method"=S256' >/dev/null
+fi
+
+echo "Garantindo client scope roles no client $ECIDADE_OIDC_CLIENT_ID..."
+ensure_default_client_scope "$ECIDADE_CLIENT_ID" roles
+
+echo "Garantindo usuario do e-Cidade..."
+ensure_realm_user "$ECIDADE_SSO_USER" "$ECIDADE_SSO_PASSWORD" "$ECIDADE_SSO_EMAIL" Usuario e-Cidade legislagd.user ecidade.admin
 
 if [ -z "$CHATWOOT_OIDC_CLIENT_SECRET" ]; then
   echo "CHATWOOT_OIDC_CLIENT_SECRET deve ser definido no ambiente local." >&2

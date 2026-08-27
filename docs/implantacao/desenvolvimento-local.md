@@ -155,11 +155,11 @@ make dev-install
 Esse comando:
 
 - cria `.env` a partir de `.env.example`, quando necessario;
-- define valores locais para `CHATWOOT_OIDC_CLIENT_SECRET` e `CHATWOOT_SSO_PASSWORD` se estiverem vazios;
+- define valores locais para `CHATWOOT_OIDC_CLIENT_SECRET`, `CHATWOOT_SSO_PASSWORD` e `ECIDADE_OIDC_CLIENT_SECRET` se estiverem vazios;
 - sobe a plataforma integrada;
 - aplica migrations/esquemas dos modulos;
 - garante usuarios administrativos locais do SAPL-SD;
-- cria/atualiza clients, roles e usuarios locais do Keycloak;
+- cria/atualiza clients, roles e usuarios locais do Keycloak, incluindo o client `ecidade`;
 - carrega fixtures estruturais do SIGI-SD;
 - cria/atualiza o usuario local do Chatwoot usado pelo SSO LegislaGD;
 - recria a carga inicial do PortalModelo-SD via buildout;
@@ -304,6 +304,18 @@ criacao Just-In-Time em uma conta especifica ou ajuste `CHATWOOT_SSO_EMAIL` para
 um usuario Chatwoot ja existente. Defina tambem `CHATWOOT_OIDC_CLIENT_SECRET`
 e `CHATWOOT_SSO_PASSWORD` no ambiente local antes de provisionar o Keycloak.
 
+Usuario de teste local para o piloto e-Cidade-SD:
+
+| Usuario | Senha | E-mail | Role |
+| --- | --- | --- | --- |
+| `dbseller` | `ecidade_dev_password` | `dbseller@legislagd.localhost` | `ecidade.admin` |
+
+O SSO do e-Cidade-SD fica em `extension/package/Legislagdsso` dentro do fork
+e-Cidade-SD. Ele preserva o login local e adiciona o botao `Entrar com
+LegislaGD` por `modification` no template de login. O callback cria a sessao
+legada `DB_*` somente apos validar token OIDC, role macro `ecidade.*`, usuario
+local ativo e departamento existente.
+
 Variaveis principais:
 
 ```bash
@@ -321,6 +333,13 @@ CHATWOOT_OIDC_CLIENT_ID=chatwoot
 CHATWOOT_OIDC_CLIENT_SECRET=
 CHATWOOT_OIDC_ISSUER=http://id.legislagd.localhost/realms/legislagd
 CHATWOOT_SSO_PASSWORD=
+ECIDADE_OIDC_ENABLED=true
+ECIDADE_OIDC_CLIENT_ID=ecidade
+ECIDADE_OIDC_CLIENT_SECRET=
+ECIDADE_OIDC_ISSUER=http://id.legislagd.localhost/realms/legislagd
+ECIDADE_OIDC_REDIRECT_URI=http://ecidade.legislagd.localhost/extension/legislagdsso/auth/callback
+ECIDADE_OIDC_ALLOW_EMAIL_LINK=true
+ECIDADE_OIDC_ALLOW_LOGIN_LINK=true
 ```
 
 Essas senhas sao padroes de desenvolvimento. Em homologacao e producao, devem ser substituidas por secrets ou variaveis fora do Git.

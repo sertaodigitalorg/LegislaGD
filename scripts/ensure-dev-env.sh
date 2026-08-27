@@ -98,8 +98,21 @@ fi
 
 normalize_plain_env_value CHATWOOT_OIDC_UI_LOCALES pt-BR
 normalize_plain_env_value SAPL_OIDC_UI_LOCALES pt-BR
+normalize_plain_env_value ECIDADE_OIDC_UI_LOCALES pt-BR
 set_env_default LEGISLAGD_ENABLE_ECIDADE 1
 set_env_default CHATWOOT_OIDC_CLIENT_SECRET "$(make_secret)"
 set_env_default CHATWOOT_SSO_PASSWORD "$(make_chatwoot_password)"
+set_env_default ECIDADE_OIDC_ENABLED true
+set_env_default ECIDADE_OIDC_ISSUER http://id.legislagd.localhost/realms/legislagd
+set_env_default ECIDADE_OIDC_WELL_KNOWN_URL http://id.legislagd.localhost/realms/legislagd/.well-known/openid-configuration
+set_env_default ECIDADE_OIDC_CLIENT_ID ecidade
+set_env_default ECIDADE_OIDC_CLIENT_SECRET "$(make_secret)"
+set_env_default ECIDADE_OIDC_REDIRECT_URI http://ecidade.legislagd.localhost/extension/legislagdsso/auth/callback
+set_env_default ECIDADE_OIDC_UI_LOCALES pt-BR
+set_env_default ECIDADE_OIDC_ALLOW_EMAIL_LINK true
+set_env_default ECIDADE_OIDC_ALLOW_LOGIN_LINK true
+set_env_default ECIDADE_SSO_USER dbseller
+set_env_default ECIDADE_SSO_PASSWORD ecidade_dev_password
+set_env_default ECIDADE_SSO_EMAIL dbseller@legislagd.localhost
 
 echo ".env pronto para desenvolvimento local."

@@ -19,6 +19,16 @@ services:
       DB_PASSWORD: ${ECIDADE_DB_PASSWORD:-dbseller}
       ECIDADE_SCHEMA_OWNER_USER: ${ECIDADE_SCHEMA_OWNER_USER:-ecidade}
       ECIDADE_SCHEMA_OWNER_PASSWORD: ${ECIDADE_SCHEMA_OWNER_PASSWORD:-ecidade}
+      ECIDADE_OIDC_ENABLED: ${ECIDADE_OIDC_ENABLED:-true}
+      ECIDADE_OIDC_ISSUER: ${ECIDADE_OIDC_ISSUER:-http://id.legislagd.localhost/realms/legislagd}
+      ECIDADE_OIDC_WELL_KNOWN_URL: ${ECIDADE_OIDC_WELL_KNOWN_URL:-http://id.legislagd.localhost/realms/legislagd/.well-known/openid-configuration}
+      ECIDADE_OIDC_CLIENT_ID: ${ECIDADE_OIDC_CLIENT_ID:-ecidade}
+      ECIDADE_OIDC_CLIENT_SECRET: ${ECIDADE_OIDC_CLIENT_SECRET:-}
+      ECIDADE_OIDC_REDIRECT_URI: ${ECIDADE_OIDC_REDIRECT_URI:-http://ecidade.legislagd.localhost/extension/legislagdsso/auth/callback}
+      ECIDADE_OIDC_SCOPES: ${ECIDADE_OIDC_SCOPES:-openid email profile}
+      ECIDADE_OIDC_UI_LOCALES: ${ECIDADE_OIDC_UI_LOCALES:-pt-BR}
+      ECIDADE_OIDC_ALLOW_EMAIL_LINK: ${ECIDADE_OIDC_ALLOW_EMAIL_LINK:-true}
+      ECIDADE_OIDC_ALLOW_LOGIN_LINK: ${ECIDADE_OIDC_ALLOW_LOGIN_LINK:-true}
     volumes:
       - ../../modules/e-Cidade-SD/ecidade:/var/www/html/
     networks:
