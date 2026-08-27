@@ -14,6 +14,10 @@ export PATH="${PATH:-/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bi
 : "${ECIDADE_SCHEMA_OWNER_PASSWORD:=ecidade}"
 
 chmod -R 775 /var/www/html
+mkdir -p /var/www/html/extension/log
+touch /var/www/html/extension/log/error.log
+chown -R www-data:www-data /var/www/html/extension/log || true
+chmod -R 775 /var/www/html/extension/log
 
 if [ -f docker/database/ecidade_base.sql.gz ]; then
   gunzip -kf docker/database/ecidade_base.sql.gz
@@ -25,6 +29,10 @@ fi
 
 cp -arf .env.example .env
 cp -arf libs/db_conn.php.dist libs/db_conn.php
+
+if [ -f libs/db_acessa.php.dist ]; then
+  cp -arf libs/db_acessa.php.dist libs/db_acessa.php
+fi
 
 if [ -f config/ecidade_config.php.dist ] && [ ! -f config/ecidade_config.php ]; then
   cp -arf config/ecidade_config.php.dist config/ecidade_config.php
@@ -86,6 +94,14 @@ PGPASSWORD="${ECIDADE_SCHEMA_OWNER_PASSWORD}" psql -v ON_ERROR_STOP=1 \
   -p "${DB_PORT}" \
   -d "${DB_DATABASE}" \
   -f /tmp/ecidade_pos.pg16.sql
+
+DB_USERNAME_SQL=$(printf '%s' "${DB_USERNAME}" | sed 's/"/""/g')
+PGPASSWORD="${ECIDADE_SCHEMA_OWNER_PASSWORD}" psql -v ON_ERROR_STOP=1 \
+  -U "${ECIDADE_SCHEMA_OWNER_USER}" \
+  -h "${DB_HOST}" \
+  -p "${DB_PORT}" \
+  -d "${DB_DATABASE}" \
+  -c "ALTER ROLE \"${DB_USERNAME_SQL}\" SET client_encoding TO 'LATIN1';"
 
 export COMPOSER_HOME="${COMPOSER_HOME:-/tmp/composer-home}"
 export COMPOSER_CACHE_DIR="${COMPOSER_CACHE_DIR:-/tmp/composer-cache}"
