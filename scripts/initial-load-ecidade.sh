@@ -55,6 +55,9 @@ sed -E \
   -e '/^[[:space:]]*WITHOUT OIDS;[[:space:]]*$/d' \
   -e 's/[[:space:]]+WITH OIDS;$/;/' \
   -e 's/[[:space:]]+WITHOUT OIDS;$/;/' \
+  -e '/CREATE AGGREGATE public[.]array_accum\(any(element|compatible)\)/,/^[[:space:]]*\);/ s/CREATE AGGREGATE public[.]array_accum\(anyelement\)/CREATE AGGREGATE public.array_accum(anycompatible)/' \
+  -e '/CREATE AGGREGATE public[.]array_accum\(any(element|compatible)\)/,/^[[:space:]]*\);/ s/STYPE = anyarray,/STYPE = anycompatiblearray,/' \
+  -e 's/ALTER AGGREGATE public[.]array_accum\(anyelement\)/ALTER AGGREGATE public.array_accum(anycompatible)/g' \
   -e "s/OWNER TO postgres;/OWNER TO ${ECIDADE_SCHEMA_OWNER_USER};/g" \
   -e "s/OWNER TO \"postgres\";/OWNER TO \"${ECIDADE_SCHEMA_OWNER_USER}\";/g" \
   -e "s/TO postgres;/TO ${ECIDADE_SCHEMA_OWNER_USER};/g" \
