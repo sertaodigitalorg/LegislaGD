@@ -50,10 +50,15 @@ sed -i "s/\$DB_SENHA.*/\$DB_SENHA = \"${DB_PASSWORD}\";/g" libs/db_conn.php
 sed -i "s/DB_VALIDA_REQUISITOS.*/DB_VALIDA_REQUISITOS = false;/g" libs/db_conn.php
 
 sed -E \
+  -e '/^[[:space:]]*SET default_with_oids[[:space:]]*=/d' \
   -e '/^[[:space:]]*WITH OIDS;[[:space:]]*$/d' \
   -e '/^[[:space:]]*WITHOUT OIDS;[[:space:]]*$/d' \
   -e 's/[[:space:]]+WITH OIDS;$/;/' \
   -e 's/[[:space:]]+WITHOUT OIDS;$/;/' \
+  -e "s/OWNER TO postgres;/OWNER TO ${ECIDADE_SCHEMA_OWNER_USER};/g" \
+  -e "s/OWNER TO \"postgres\";/OWNER TO \"${ECIDADE_SCHEMA_OWNER_USER}\";/g" \
+  -e "s/TO postgres;/TO ${ECIDADE_SCHEMA_OWNER_USER};/g" \
+  -e "s/TO \"postgres\";/TO \"${ECIDADE_SCHEMA_OWNER_USER}\";/g" \
   docker/ecidade_base.sql > /tmp/ecidade_base.pg16.sql
 
 PGPASSWORD="${ECIDADE_SCHEMA_OWNER_PASSWORD}" psql -v ON_ERROR_STOP=1 \
