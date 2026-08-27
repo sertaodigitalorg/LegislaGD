@@ -22,6 +22,7 @@ declare -A REPOS=(
   ["SAPL-SD"]="${SAPL_SD_GIT_URL:-https://github.com/sertaodigitalorg/SAPL-SD.git}"
   ["PortalModelo-SD"]="${PORTALMODELO_SD_GIT_URL:-https://github.com/sertaodigitalorg/PortalModelo-SD.git}"
   ["SIGI-SD"]="${SIGI_SD_GIT_URL:-https://github.com/sertaodigitalorg/SIGI-SD.git}"
+  ["Plenario-Digital-Core"]="${PLENARIO_DIGITAL_CORE_GIT_URL:-https://github.com/sertaodigitalorg/Plenario-Digital-Core.git}"
   ["Chatwoot-SD"]="${CHATWOOT_SD_GIT_URL:-https://github.com/sertaodigitalorg/Chatwoot-SD.git}"
   ["e-Cidade-SD"]="${ECIDADE_SD_GIT_URL:-https://github.com/sertaodigitalorg/e-Cidade-SD.git}"
 )
@@ -66,11 +67,14 @@ component_branch() {
     SIGI-SD)
       echo "${SIGI_SD_BRANCH:-${default_branch}}"
       ;;
+    Plenario-Digital-Core)
+      echo "${PLENARIO_DIGITAL_CORE_BRANCH:-main}"
+      ;;
     Chatwoot-SD)
       echo "${CHATWOOT_SD_BRANCH:-${default_branch}}"
       ;;
     e-Cidade-SD)
-      echo "${ECIDADE_SD_BRANCH:-${default_branch}}"
+      echo "${ECIDADE_SD_BRANCH:-main}"
       ;;
     *)
       echo "${default_branch}"
@@ -95,7 +99,8 @@ selected_components() {
   local include_portal="${LEGISLAGD_ENABLE_PORTAL:-1}"
   local include_sapl="${LEGISLAGD_ENABLE_SAPL:-1}"
   local include_sigi="${LEGISLAGD_ENABLE_SIGI:-1}"
-  local include_ecidade="${LEGISLAGD_INCLUDE_ECIDADE:-0}"
+  local include_plenario="${LEGISLAGD_ENABLE_PLENARIO:-1}"
+  local include_ecidade="${LEGISLAGD_ENABLE_ECIDADE:-${LEGISLAGD_INCLUDE_ECIDADE:-1}}"
 
   if [[ "${include_portal}" == "1" || "${include_portal}" == "true" || "${include_portal}" == "yes" || "${include_portal}" == "on" ]]; then
     echo "PortalModelo-SD"
@@ -108,6 +113,10 @@ selected_components() {
   if [[ "${include_sigi}" == "1" || "${include_sigi}" == "true" || "${include_sigi}" == "yes" || "${include_sigi}" == "on" ]]; then
     echo "SIGI-SD"
     echo "Chatwoot-SD"
+  fi
+
+  if [[ "${include_plenario}" == "1" || "${include_plenario}" == "true" || "${include_plenario}" == "yes" || "${include_plenario}" == "on" ]]; then
+    echo "Plenario-Digital-Core"
   fi
 
   if [[ "${include_ecidade}" == "1" || "${include_ecidade}" == "true" || "${include_ecidade}" == "yes" || "${include_ecidade}" == "on" ]]; then
@@ -143,7 +152,8 @@ echo "PortalModelo-SD habilitado: ${LEGISLAGD_ENABLE_PORTAL:-1}"
 echo "SAPL-SD habilitado: ${LEGISLAGD_ENABLE_SAPL:-1}"
 echo "SIGI-SD habilitado: ${LEGISLAGD_ENABLE_SIGI:-1}"
 echo "Chatwoot-SD acompanha SIGI-SD quando SIGI esta habilitado"
-echo "e-Cidade-SD incluido: ${LEGISLAGD_INCLUDE_ECIDADE:-0}"
+echo "Plenario-Digital-Core habilitado: ${LEGISLAGD_ENABLE_PLENARIO:-1}"
+echo "e-Cidade-SD incluido: ${LEGISLAGD_ENABLE_ECIDADE:-${LEGISLAGD_INCLUDE_ECIDADE:-1}}"
 
 mkdir -p "${WORKSPACE_DIR}"
 

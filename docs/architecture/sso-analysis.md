@@ -33,7 +33,7 @@ Hosts locais ja usados:
 - `sigi.legislagd.localhost`
 - `chat.sigi.legislagd.localhost`
 - `portal.legislagd.localhost`
-- `ecidade.legislagd.localhost` planejado, mas e-Cidade ainda fora da subida principal
+- `ecidade.legislagd.localhost` exposto pelo Traefik central quando `LEGISLAGD_ENABLE_ECIDADE=1`
 - `proxy.legislagd.localhost`
 
 ## Situacao atual por sistema
