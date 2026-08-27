@@ -19,10 +19,10 @@ fi
 case "$base_branch" in
   dev)
     case "$head_branch" in
-      feature/* | fix/* | bugfix/* | chore/*)
+      feature/* | fix/* | bugfix/* | chore/* | docs/*)
         ;;
       *)
-        echo "::error::Pull Requests para 'dev' devem vir de feature/*, fix/*, bugfix/* ou chore/*, nao de '${head_branch}'." >&2
+        echo "::error::Pull Requests para 'dev' devem vir de feature/*, fix/*, bugfix/*, chore/* ou docs/*, nao de '${head_branch}'." >&2
         exit 1
         ;;
     esac
