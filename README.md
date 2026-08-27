@@ -11,10 +11,11 @@ Plataforma publica e livre de Governo Digital para gestao legislativa, administr
 | LegislaGD | https://github.com/sertaodigitalorg/LegislaGD.git | Repositorio agregador |
 | SAPL-SD | https://github.com/sertaodigitalorg/SAPL-SD.git | https://github.com/interlegis/sapl.git |
 | PortalModelo-SD | https://github.com/sertaodigitalorg/PortalModelo-SD.git | https://github.com/interlegis/portalmodelo.git |
+| Plenario-Digital-Core | https://github.com/sertaodigitalorg/Plenario-Digital-Core.git | Componente proprio |
 | e-Cidade-SD | https://github.com/sertaodigitalorg/e-Cidade-SD.git | https://github.com/DBSeller/e-cidade.git |
 | SIGI-SD | https://github.com/sertaodigitalorg/SIGI-SD.git | A confirmar antes de configurar fork/upstream |
 
-O LegislaGD e a plataforma central legislativa aberta: concentra a experiencia de desenvolvimento, a documentacao, a governanca, a arquitetura, a infraestrutura local e a coordenacao de integracoes entre os componentes. SAPL-SD, PortalModelo-SD, SIGI-SD e e-Cidade-SD continuam independentes, com historico, licenca e evolucao proprios, mas sao operados pelo LegislaGD como modulos da plataforma.
+O LegislaGD e a plataforma central legislativa aberta: concentra a experiencia de desenvolvimento, a documentacao, a governanca, a arquitetura, a infraestrutura local e a coordenacao de integracoes entre os componentes. SAPL-SD, PortalModelo-SD, Plenario-Digital-Core, SIGI-SD e e-Cidade-SD continuam independentes, com historico, licenca e evolucao proprios, mas sao operados pelo LegislaGD como modulos da plataforma.
 
 ## Missao
 
@@ -57,6 +58,7 @@ PortalModelo-SD
 ## Responsabilidades
 
 - **SAPL-SD:** fonte oficial dos dados legislativos.
+- **Plenario-Digital-Core:** experiencia operacional do plenario, sem substituir a autoridade legislativa do SAPL.
 - **e-Cidade-SD:** fonte oficial dos dados administrativos, financeiros e funcionais.
 - **PortalModelo-SD:** fachada publica institucional.
 - **SIGI-SD:** fonte oficial dos protocolos e atendimentos, mantida pelas equipes do Sertao Digital.
@@ -98,15 +100,15 @@ make up
 make urls
 ```
 
-A execucao padrao de `make up`, sem personalizacao no `.env`, usa `LEGISLAGD_ENV=development`, clona repositorios ausentes na branch `dev` e sobe PortalModelo-SD, SAPL-SD e SIGI-SD. Esse e o fluxo local esperado para desenvolvimento.
+A execucao padrao de `make up`, sem personalizacao no `.env`, usa `LEGISLAGD_ENV=development`, clona repositorios ausentes na branch configurada e sobe PortalModelo-SD, SAPL-SD, SIGI-SD e Plenario-Digital-Core. Esse e o fluxo local esperado para desenvolvimento.
 
-A plataforma integrada usa um unico PostgreSQL central do LegislaGD. SAPL-SD, SIGI-SD e Chatwoot usam bases e usuarios separados dentro desse mesmo container.
+A plataforma integrada usa um unico PostgreSQL central do LegislaGD. SAPL-SD, Plenario-Digital-Core, SIGI-SD e Chatwoot usam bases e usuarios separados dentro desse mesmo container.
 
 A autenticacao unificada esta sendo preparada com Keycloak self-hosted. No ambiente local, `make up` tambem sobe o Keycloak em `http://id.legislagd.localhost`, usando banco e usuario proprios dentro do PostgreSQL central.
 
-A subida principal inclui PortalModelo-SD, SAPL-SD e SIGI-SD por padrao. Cada modulo pode ser desabilitado no `.env` com `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0` ou `LEGISLAGD_ENABLE_SIGI=0`. O e-Cidade-SD permanece fora desta etapa ate a integracao administrativa ser preparada.
+A subida principal inclui PortalModelo-SD, SAPL-SD, Plenario-Digital-Core, SIGI-SD e e-Cidade-SD por padrao. Cada modulo pode ser desabilitado no `.env` com `LEGISLAGD_ENABLE_PORTAL=0`, `LEGISLAGD_ENABLE_SAPL=0`, `LEGISLAGD_ENABLE_PLENARIO=0`, `LEGISLAGD_ENABLE_SIGI=0` ou `LEGISLAGD_ENABLE_ECIDADE=0`.
 
-Quando um modulo ainda nao existe no workspace, o LegislaGD clona automaticamente o fork configurado no `.env` na branch definida: `dev` para desenvolvimento local, `hml` para homologacao ou `main` para base principal/producao. As URLs padrao apontam para a organizacao Sertao Digital, mas podem ser trocadas por outra fonte usando `PORTALMODELO_SD_GIT_URL`, `SAPL_SD_GIT_URL` e `SIGI_SD_GIT_URL`. Repositorios locais ja existentes sao preservados.
+Quando um modulo ainda nao existe no workspace, o LegislaGD clona automaticamente o fork configurado no `.env` na branch definida: `dev` para desenvolvimento local, `hml` para homologacao ou `main` para base principal/producao. As URLs padrao apontam para a organizacao Sertao Digital, mas podem ser trocadas por outra fonte usando `PORTALMODELO_SD_GIT_URL`, `SAPL_SD_GIT_URL`, `PLENARIO_DIGITAL_CORE_GIT_URL`, `SIGI_SD_GIT_URL` e `ECIDADE_SD_GIT_URL`. Repositorios locais ja existentes sao preservados.
 
 Tambem e possivel subir ou derrubar um modulo isolado sem perder o proxy central:
 
@@ -114,6 +116,7 @@ Tambem e possivel subir ou derrubar um modulo isolado sem perder o proxy central
 make up sapl
 make up portal
 make up sigi
+make up plenario
 make down sapl
 ```
 

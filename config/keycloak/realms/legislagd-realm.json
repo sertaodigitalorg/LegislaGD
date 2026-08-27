@@ -22,6 +22,9 @@
       { "name": "sapl.operador", "description": "Operador macro do SAPL-SD" },
       { "name": "sapl.parlamentar", "description": "Parlamentar ou autor no SAPL-SD" },
       { "name": "sapl.consulta", "description": "Consulta autenticada no SAPL-SD" },
+      { "name": "plenario.admin", "description": "Administrador macro do Plenario Digital" },
+      { "name": "plenario.operador", "description": "Operador macro do Plenario Digital" },
+      { "name": "plenario.parlamentar", "description": "Parlamentar com acesso ao Plenario Digital; cargo na sessao permanece autoridade do SAPL" },
       { "name": "sigi.admin", "description": "Administrador macro do SIGI-SD" },
       { "name": "sigi.supervisor", "description": "Supervisor macro do SIGI-SD" },
       { "name": "sigi.atendente", "description": "Atendente macro do SIGI-SD" },
@@ -72,6 +75,94 @@
           "temporary": false
         }
       ]
+    },
+    {
+      "username": "plenario.operador",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Operador",
+      "lastName": "Plenario",
+      "email": "plenario.operador@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "plenario.operador"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "plenario_dev_password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "plenario.parlamentar",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Parlamentar",
+      "lastName": "Plenario",
+      "email": "plenario.parlamentar@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "plenario.parlamentar"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "plenario_dev_password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "chatwoot.agent",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Agente",
+      "lastName": "Chatwoot",
+      "email": "john@acme.inc",
+      "realmRoles": [
+        "legislagd.user",
+        "chatwoot.agent"
+      ]
+    },
+    {
+      "username": "sigi.admin",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Administrador",
+      "lastName": "SIGI",
+      "email": "sigi.admin@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "sigi.admin"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sigi_dev_password",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "sigi.atendente",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "Atendente",
+      "lastName": "SIGI",
+      "email": "sigi.atendente@legislagd.localhost",
+      "realmRoles": [
+        "legislagd.user",
+        "sigi.atendente"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "sigi_dev_password",
+          "temporary": false
+        }
+      ]
     }
   ],
   "clients": [
@@ -116,11 +207,31 @@
       ]
     },
     {
+      "clientId": "plenario",
+      "name": "Plenario Digital",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "redirectUris": [
+        "http://plenario.legislagd.localhost/*"
+      ],
+      "webOrigins": [
+        "http://plenario.legislagd.localhost"
+      ]
+    },
+    {
       "clientId": "sigi",
       "name": "SIGI-SD",
       "enabled": true,
       "protocol": "openid-connect",
-      "publicClient": false,
+      "publicClient": true,
+      "clientAuthenticatorType": "none",
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": false,
       "serviceAccountsEnabled": false,

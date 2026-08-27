@@ -6,6 +6,14 @@ services:
   symfony-admin:
     environment:
       DATABASE_URL: postgresql://${SIGI_DB_USER:-sigi}:${SIGI_DB_PASSWORD:-sigi_dev_password}@legislagd-postgres:5432/${SIGI_DB_NAME:-sigi_sd}?serverVersion=16&charset=utf8
+      SIGI_OIDC_ENABLED: ${SIGI_OIDC_ENABLED:-true}
+      SIGI_OIDC_DISPLAY_NAME: ${SIGI_OIDC_DISPLAY_NAME:-LegislaGD}
+      SIGI_OIDC_ISSUER: ${SIGI_OIDC_ISSUER:-http://id.legislagd.localhost/realms/legislagd}
+      SIGI_OIDC_INTERNAL_ISSUER: ${SIGI_OIDC_INTERNAL_ISSUER:-http://keycloak:8080/realms/legislagd}
+      SIGI_OIDC_WELL_KNOWN_URL: ${SIGI_OIDC_WELL_KNOWN_URL:-http://keycloak:8080/realms/legislagd/.well-known/openid-configuration}
+      SIGI_OIDC_CLIENT_ID: ${SIGI_OIDC_CLIENT_ID:-sigi}
+      SIGI_OIDC_CLIENT_SECRET: ${SIGI_OIDC_CLIENT_SECRET:-}
+      SIGI_OIDC_SCOPES: ${SIGI_OIDC_SCOPES:-openid email profile}
     depends_on:
       - redis
     networks:
@@ -38,6 +46,17 @@ services:
       POSTGRES_DATABASE: ${CHATWOOT_DB_NAME:-chatwoot_production}
       POSTGRES_USERNAME: ${CHATWOOT_DB_USER:-chatwoot}
       POSTGRES_PASSWORD: ${CHATWOOT_DB_PASSWORD:-chatwoot_dev_password}
+      FRONTEND_URL: ${CHATWOOT_FRONTEND_URL:-http://chat.sigi.legislagd.localhost}
+      DEFAULT_LOCALE: ${CHATWOOT_DEFAULT_LOCALE:-pt_BR}
+      CHATWOOT_OIDC_ENABLED: ${CHATWOOT_OIDC_ENABLED:-true}
+      CHATWOOT_OIDC_PROVIDER_NAME: ${CHATWOOT_OIDC_PROVIDER_NAME:-legislagd}
+      CHATWOOT_OIDC_DISPLAY_NAME: ${CHATWOOT_OIDC_DISPLAY_NAME:-LegislaGD}
+      CHATWOOT_OIDC_ISSUER: ${CHATWOOT_OIDC_ISSUER:-http://id.legislagd.localhost/realms/legislagd}
+      CHATWOOT_OIDC_CLIENT_ID: ${CHATWOOT_OIDC_CLIENT_ID:-chatwoot}
+      CHATWOOT_OIDC_CLIENT_SECRET: ${CHATWOOT_OIDC_CLIENT_SECRET:?CHATWOOT_OIDC_CLIENT_SECRET must be set}
+      CHATWOOT_OIDC_SCOPES: ${CHATWOOT_OIDC_SCOPES:-openid email profile}
+      CHATWOOT_OIDC_UI_LOCALES: ${CHATWOOT_OIDC_UI_LOCALES:-pt-BR}
+      CHATWOOT_OIDC_ACCOUNT_ID: ${CHATWOOT_OIDC_ACCOUNT_ID:-}
     depends_on:
       - redis
     networks:
@@ -60,6 +79,17 @@ services:
       POSTGRES_DATABASE: ${CHATWOOT_DB_NAME:-chatwoot_production}
       POSTGRES_USERNAME: ${CHATWOOT_DB_USER:-chatwoot}
       POSTGRES_PASSWORD: ${CHATWOOT_DB_PASSWORD:-chatwoot_dev_password}
+      FRONTEND_URL: ${CHATWOOT_FRONTEND_URL:-http://chat.sigi.legislagd.localhost}
+      DEFAULT_LOCALE: ${CHATWOOT_DEFAULT_LOCALE:-pt_BR}
+      CHATWOOT_OIDC_ENABLED: ${CHATWOOT_OIDC_ENABLED:-true}
+      CHATWOOT_OIDC_PROVIDER_NAME: ${CHATWOOT_OIDC_PROVIDER_NAME:-legislagd}
+      CHATWOOT_OIDC_DISPLAY_NAME: ${CHATWOOT_OIDC_DISPLAY_NAME:-LegislaGD}
+      CHATWOOT_OIDC_ISSUER: ${CHATWOOT_OIDC_ISSUER:-http://id.legislagd.localhost/realms/legislagd}
+      CHATWOOT_OIDC_CLIENT_ID: ${CHATWOOT_OIDC_CLIENT_ID:-chatwoot}
+      CHATWOOT_OIDC_CLIENT_SECRET: ${CHATWOOT_OIDC_CLIENT_SECRET:?CHATWOOT_OIDC_CLIENT_SECRET must be set}
+      CHATWOOT_OIDC_SCOPES: ${CHATWOOT_OIDC_SCOPES:-openid email profile}
+      CHATWOOT_OIDC_UI_LOCALES: ${CHATWOOT_OIDC_UI_LOCALES:-pt-BR}
+      CHATWOOT_OIDC_ACCOUNT_ID: ${CHATWOOT_OIDC_ACCOUNT_ID:-}
     depends_on:
       - redis
       - chatwoot
