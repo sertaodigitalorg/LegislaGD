@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LegislaGD</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true">LG</span>
+        <span>
+          <strong>LegislaGD</strong>
+          <small>Governo Digital para o Poder Legislativo</small>
+        </span>
+      </a>
+
+      <nav class="topnav" aria-label="Navegacao principal">
+        <a href="http://portal.legislagd.localhost">Portal</a>
+        <a href="http://sapl.legislagd.localhost">SAPL</a>
+        <a href="http://sigi.legislagd.localhost">Atendimento</a>
+        <a href="http://id.legislagd.localhost">Login</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Ambiente integrado local</p>
+          <h1 id="page-title">Painel operacional da plataforma legislativa</h1>
+          <p class="lead">
+            Acesse os modulos do LegislaGD por uma entrada unica, com os
+            sistemas legislativos, atendimento, administracao e identidade
+            centralizados no ambiente de desenvolvimento.
+          </p>
+        </div>
+        <div class="identity-panel" aria-label="Identidade central">
+          <span class="status-dot"></span>
+          <div>
+            <strong>Keycloak Legislativo</strong>
+            <span>SSO central em id.legislagd.localhost</span>
+          </div>
+          <a class="button secondary" href="http://id.legislagd.localhost">Abrir login</a>
+        </div>
+      </section>
+
+      <section class="module-grid" aria-label="Modulos integrados">
+        <article class="module-card primary">
+          <div>
+            <span class="module-kicker">Publico</span>
+            <h2>Portal institucional</h2>
+            <p>Noticias, vereadores, sessoes, transparencia e acesso do cidadao.</p>
+          </div>
+          <a class="button" href="http://portal.legislagd.localhost">Abrir Portal</a>
+        </article>
+
+        <article class="module-card">
+          <div>
+            <span class="module-kicker">Legislativo</span>
+            <h2>SAPL-SD</h2>
+            <p>Materias, tramitacao, sessoes, normas, comissoes e dados oficiais.</p>
+          </div>
+          <a class="button" href="http://sapl.legislagd.localhost">Abrir SAPL</a>
+        </article>
+
+        <article class="module-card">
+          <div>
+            <span class="module-kicker">Plenario</span>
+            <h2>Plenario Digital</h2>
+            <p>Experiencia operacional de sessao, presenca, votacao e painel.</p>
+          </div>
+          <a class="button" href="http://plenario.legislagd.localhost">Abrir Plenario</a>
+        </article>
+
+        <article class="module-card">
+          <div>
+            <span class="module-kicker">Atendimento</span>
+            <h2>SIGI-SD</h2>
+            <p>Ouvidoria, e-SIC, protocolos, gabinete e relacionamento com o cidadao.</p>
+          </div>
+          <a class="button" href="http://sigi.legislagd.localhost">Abrir SIGI</a>
+        </article>
+
+        <article class="module-card">
+          <div>
+            <span class="module-kicker">Omnichannel</span>
+            <h2>Chatwoot-SD</h2>
+            <p>Canais digitais integrados ao fluxo de atendimento legislativo.</p>
+          </div>
+          <a class="button" href="http://chat.sigi.legislagd.localhost">Abrir Chat</a>
+        </article>
+
+        <article class="module-card">
+          <div>
+            <span class="module-kicker">Administracao</span>
+            <h2>e-Cidade-SD</h2>
+            <p>Rotinas administrativas, financeiras, RH, patrimonio e compras.</p>
+          </div>
+          <a class="button" href="http://ecidade.legislagd.localhost">Abrir e-Cidade</a>
+        </article>
+      </section>
+
+      <section class="ops-band" aria-label="Operacao tecnica">
+        <div>
+          <span class="module-kicker">Operacao</span>
+          <h2>Ferramentas locais</h2>
+        </div>
+        <div class="ops-links">
+          <a href="http://proxy.legislagd.localhost">Traefik</a>
+          <a href="http://qdrant.sigi.legislagd.localhost/collections">Qdrant</a>
+          <a href="http://ia.sigi.legislagd.localhost/api/version">IA local</a>
+          <a href="http://pgadmin.sigi.legislagd.localhost">pgAdmin</a>
+          <a href="http://portainer.sigi.legislagd.localhost">Portainer</a>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

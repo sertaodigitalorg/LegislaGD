@@ -1,6 +1,19 @@
 name: legislagd
 
 services:
+  dashboard:
+    image: nginx:1.27-alpine
+    container_name: legislagd-dashboard
+    volumes:
+      - ../proxy/dashboard:/usr/share/nginx/html:ro
+    networks:
+      - legislagd
+    labels:
+      traefik.enable: "true"
+      traefik.http.routers.legislagd-dashboard.rule: "Host(`legislagd.localhost`)"
+      traefik.http.routers.legislagd-dashboard.entrypoints: "web"
+      traefik.http.services.legislagd-dashboard.loadbalancer.server.port: "80"
+
   proxy:
     image: traefik:latest
     container_name: legislagd-traefik
@@ -24,7 +37,7 @@ services:
           - id.legislagd.localhost
     labels:
       traefik.enable: "true"
-      traefik.http.routers.legislagd-proxy.rule: "Host(`proxy.legislagd.localhost`) || Host(`traefik.legislagd.localhost`) || Host(`legislagd.localhost`)"
+      traefik.http.routers.legislagd-proxy.rule: "Host(`proxy.legislagd.localhost`) || Host(`traefik.legislagd.localhost`)"
       traefik.http.routers.legislagd-proxy.entrypoints: "web"
       traefik.http.routers.legislagd-proxy.service: "api@internal"
 

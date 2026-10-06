@@ -255,7 +255,7 @@ Enderecos principais:
 
 | Modulo | URL |
 | --- | --- |
-| LegislaGD / Traefik | `http://legislagd.localhost` |
+| LegislaGD central | `http://legislagd.localhost` |
 | Dashboard Traefik | `http://proxy.legislagd.localhost` |
 | Keycloak | `http://id.legislagd.localhost` |
 | PortalModelo-SD | `http://portal.legislagd.localhost` |
@@ -397,11 +397,11 @@ scripts/test-wsl-stack.sh
 
 `make logs` exige um modulo porque acompanha logs em modo continuo.
 
-O script `scripts/test-wsl-stack.sh` deve ser executado dentro do WSL Ubuntu depois de `make up`; ele consulta as URLs via Traefik, lista containers PostgreSQL ativos e mostra as branches locais dos modulos.
+O script `scripts/test-wsl-stack.sh` deve ser executado dentro do WSL Ubuntu depois de `make up`; ele consulta as URLs via Traefik, lista containers PostgreSQL ativos e mostra as branches locais dos modulos. Para uma auditoria rapida de status, titulo e primeiro `h1` das telas principais, use `scripts/audit-ui-stack.sh`.
 
 ## Traefik central
 
-O compose `infrastructure/compose/docker-compose.proxy.yml` cria a rede Docker `legislagd` e sobe um Traefik unico para a plataforma. Os overrides em `infrastructure/compose/overrides/` conectam os modulos a essa rede e adicionam labels de roteamento.
+O compose `infrastructure/compose/docker-compose.proxy.yml` cria a rede Docker `legislagd`, sobe um Traefik unico para a plataforma e publica o painel operacional estatico em `http://legislagd.localhost`. O dashboard tecnico do Traefik fica separado em `http://proxy.legislagd.localhost`. Os overrides em `infrastructure/compose/overrides/` conectam os modulos a essa rede e adicionam labels de roteamento.
 
 O Traefik tambem recebe o alias Docker `id.legislagd.localhost` nessa rede. Isso permite que containers como o SAPL-SD acessem o issuer OIDC pelo mesmo host usado no navegador.
 
