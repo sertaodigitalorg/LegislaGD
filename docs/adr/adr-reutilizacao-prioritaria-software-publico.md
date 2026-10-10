@@ -37,3 +37,19 @@ Para cada alternativa registrar: problema e requisito; projeto e fonte oficial; 
 
 ## Próxima etapa
 Manter catálogo de soluções reutilizáveis e aplicar o gate às necessidades concretas do LegislaGD, começando pela análise de viabilidade do e-SIC Livre.
+
+## Alcance institucional e desenvolvimento de comunidade — decisão complementar (2026-10-10)
+
+**Regra do Centro de Inovação e Tecnologia Sertão Digital (CIT SD):** a priorização de software público, livre e de código aberto é política institucional de engenharia e inovação para as duas frentes de Governo Digital: **LegislaGD (Legislativo)** e **ExecutaGD (Executivo)**. O mesmo princípio orienta seus componentes transversais, inclusive SIGI-SD.
+
+**Objetivo adicional:** cada reutilização ou integração deve ser examinada também como oportunidade de ampliar a comunidade do Sertão Digital e a colaboração com mantenedores, desenvolvedores, órgãos públicos, universidades, organizações e empresas. Oportunidades incluem intercâmbio técnico, contribuição upstream, formação, parcerias institucionais, suporte, serviços e inovação compartilhada; não pressupõem parceria ou benefício comercial automático.
+
+**Práticas recomendadas:**
+1. Identificar origem, licença, mantenedores e canais oficiais da comunidade do projeto avaliado.
+2. Priorizar integrações desacopladas, padrões abertos, interoperabilidade e soberania de dados.
+3. Registrar possibilidades de contribuição upstream (documentação, testes, correções e melhorias), respeitando governança, licenças e segurança.
+4. Documentar oportunidades de relacionamento e capacitação sem confundir cooperação comunitária com contratação ou compromisso institucional.
+5. Comparar esforço de manter forks com alternativas de integração e contribuição ao projeto original.
+6. Registrar justificativa técnica, jurídica, operacional e estratégica sempre que a equipe decidir desenvolver algo novo.
+
+**Governança documental:** esta decisão tem alcance institucional. Seu registro neste repositório não significa que já foi propagada aos repositórios do ExecutaGD, SIGI-SD ou ao acervo central de políticas do CIT SD; a sincronização deve ser controlada e rastreável. Nenhum desenvolvimento é autorizado automaticamente.
