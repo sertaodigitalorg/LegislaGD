@@ -68,3 +68,17 @@ P0-P3 são **prioridades de análise funcional**, não cronograma de desenvolvim
 **Alternativas para comparação:** (A) instalação externa com link institucional e operação isolada; (B) conector de referência/status se houver interface viável; (C) módulo LAI nativo no SIGI-SD, somente quando necessidade justificada. Confirmar obrigações da GPL-2.0 ao distribuir modificações ou incorporar trechos.
 
 **Gate antes de implantação:** auditoria de segurança e atualização; autenticação, autorização, sanitização, correção de TLS, backups, retenção, acessibilidade, fluxo de recursos/prazos, dados pessoais e segregação por órgão. **Nenhuma implementação ou adoção de produção autorizada por este documento.**
+
+## Decisão arquitetural — reaproveitamento do e-SIC Livre (2026-10-10)
+
+**Decisão aprovada em princípio:** preferir **integrar o e-SIC Livre como aplicação independente** ao LegislaGD/SIGI-SD, em vez de reconstruir do zero a gestão LAI. Substitui a indicação anterior de mera referência funcional como estratégia principal; a decisão de implantação permanece condicionada à viabilidade técnica e à homologação.
+
+- **Fonte de verdade LAI:** e-SIC Livre (pedidos, respostas, prazos, recursos, anexos e tramitação que forem efetivamente suportados e validados).
+- **SIGI-SD:** relacionamento omnichannel, vinculação de referências externas, acompanhamento autorizado, notificações e auditoria de integração.
+- **PortalModelo-SD:** acesso público ao e-SIC e informação institucional; eventual experiência integrada depende de contrato validado.
+- **LegislaGD:** agregação, governança e operação independente por Câmara.
+- **Estratégia técnica:** identificar primeiro endpoints/APIs existentes. Se inexistentes, estudar API mínima no e-SIC Livre, sob GPL-2.0, com autenticação, autorização, controle de escopo por órgão, versionamento e testes; **não usar acesso direto ao banco como contrato permanente**.
+- **Condições de adoção:** auditoria de dependências PHP 7.4/Node 8.9, segurança, TLS, atualização tecnológica, proteção de dados, aderência à LAI, acessibilidade, documentação de licenças, backup e migração.
+- **Fase atual:** decisão e estudo. **Não iniciar desenvolvimento, fork ou implantação sem demanda priorizada e autorização específica.**
+
+**Sequência documental:** inventário de funcionalidades e APIs -> matriz de lacunas LAI para Câmara -> desenho do contrato mínimo -> avaliação de custo de modernização -> decisão de implantação.
