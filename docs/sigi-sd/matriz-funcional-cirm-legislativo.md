@@ -56,3 +56,15 @@ P0-P3 são **prioridades de análise funcional**, não cronograma de desenvolvim
 
 ## Decisão de implementação
 **Não implementar nesta etapa** Integration Core, conectores federais, PoC i-Educar, novos papéis ou fluxos não validados. Preservar documentação e priorizar o LegislaGD.
+
+## Avaliação específica: e-SIC Livre (2026-10-10)
+
+**Referência:** https://github.com/esiclivre/esiclivre
+
+**Constatações verificadas no repositório:** projeto originário da SEMPLA Natal/RN; licença GPL-2.0-only (`LICENSE.md`, `composer.json`); PHP ^7.4, PHPMailer ^6.0 e configuração MySQL; último push do repositório em 2023-03-02; README descreve instalação por importação SQL, Composer e NPM. A existência de API está **não confirmada**. Os parâmetros de exemplo incluem `verifyCertificates => false`; isso não deve ser copiado para produção.
+
+**Decisão provisória de arquitetura:** candidato a reaproveitamento como solução externa e independente de e-SIC; **não adotar fork nem copiar código para dentro do SIGI-SD nesta etapa**. Primeiro avaliar licença, comunidade, superfície de ataque, dependências, migração tecnológica, manutenção e aderência à LAI e às normas locais. O PortalModelo-SD pode apontar para a aplicação especializada; qualquer sincronização com SIGI-SD dependerá de API/adaptador validado e autorização do órgão. SIGI-SD pode atender comunicação geral, mas e-SIC é fonte de verdade dos pedidos LAI enquanto essa solução estiver implantada.
+
+**Alternativas para comparação:** (A) instalação externa com link institucional e operação isolada; (B) conector de referência/status se houver interface viável; (C) módulo LAI nativo no SIGI-SD, somente quando necessidade justificada. Confirmar obrigações da GPL-2.0 ao distribuir modificações ou incorporar trechos.
+
+**Gate antes de implantação:** auditoria de segurança e atualização; autenticação, autorização, sanitização, correção de TLS, backups, retenção, acessibilidade, fluxo de recursos/prazos, dados pessoais e segregação por órgão. **Nenhuma implementação ou adoção de produção autorizada por este documento.**
